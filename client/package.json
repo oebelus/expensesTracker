@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.18",
+    "@heroicons/react": "^2.1.1",
+    "alpinejs": "^3.13.5",
     "axios": "^1.6.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -23,6 +26,7 @@
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",
+    "@types/alpinejs": "^3.13.6",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
     "@types/react-helmet": "^6.1.11",

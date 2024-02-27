@@ -11,6 +11,7 @@ import {HelmetProvider} from "react-helmet-async"
 import HomePage from './pages/HomePage.tsx'
 import LoginPage from './pages/LoginPage.tsx'
 import SignupPage from './pages/SignupPage.tsx'
+import Dashboard from './pages/Dashboard.tsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -18,6 +19,7 @@ const router = createBrowserRouter(
       <Route index={true} element={<HomePage/>}></Route>
       <Route path='Login' element={<LoginPage/>}></Route>
       <Route path='Signup' element={<SignupPage/>}></Route>
+      <Route path='Dashboard' element={<Dashboard/>}></Route>
     </Route>
   )
 )
