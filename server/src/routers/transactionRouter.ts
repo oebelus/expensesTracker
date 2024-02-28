@@ -13,6 +13,17 @@ transactionRouter.get('/:userId', async (req: Request, res: Response) => {
     }
 })
 
+transactionRouter.get('/:userId/:category', async (req: Request, res: Response) => {
+    const category = req.params.category
+    try {
+        const categoryTx = await TransactionModel.find({ category: category})
+        console.log(categoryTx)
+        res.status(200).json(categoryTx)
+    } catch (err) {
+        res.status(500).json({ error: 'Internal Server Error' })
+    }
+})
+
 transactionRouter.post('/AddTransaction/:userId', async (req: Request, res: Response) => {
     const userId = req.params.userId
     try {

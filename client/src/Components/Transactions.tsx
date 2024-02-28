@@ -19,15 +19,27 @@ export default function Transactions() {
     const [date, setDate] = useState<Transaction['date']>(new Date())
     const [recurring, setRecurring] = useState<Transaction['recurring']>(false)
     const [txId, setTxId] = useState("")
+
+    const [filteredCategory, setFilteredCategory] = useState("")
+    const [filteredData, setFilteredData] = useState([])
     
     const userId = localStorage.getItem("userId");
 
     useEffect(() => {
-        axios.get(`http://localhost:4000/transactions/${userId}`)
+        if (filteredCategory !== "") {
+            axios.get(`http://localhost:4000/transactions/${userId}/${filteredCategory}`)
+            .then((response) => {
+                console.log(response);
+                setFilteredData(response.data);
+            });
+        } 
+        else {
+            axios.get(`http://localhost:4000/transactions/${userId}`)
             .then((response) => {
                 setData(response.data);
             });
-    }, [userId]);
+        }
+    }, [userId, filteredCategory]);
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedDate = e.target.value
@@ -108,6 +120,14 @@ export default function Transactions() {
         }
     }
 
+    function txArray(transactions: Transaction[]): string[] {
+        const filtered: string[] = [];
+        for (const i of transactions) {
+            if (!filtered.includes(i.category)) filtered.push(i.category)
+        }
+        return filtered
+    }
+    
     return (
         <div>
             <Modal
@@ -187,18 +207,26 @@ export default function Transactions() {
                 <h2 className="mb-4 text-2xl font-semibold leadi">My Transactions</h2>
                 <div className="mt-6 md:flex md:items-center md:justify-between mb-6">
                     <div className="inline-flex overflow-hidden bg-white border divide-x rounded-lg dark:bg-gray-900 rtl:flex-row-reverse dark:border-gray-700 dark:divide-gray-700">
-                        <button className="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 bg-gray-100 sm:text-sm dark:bg-gray-800 dark:text-gray-300">
+                        <button onClick={() => setFilteredCategory("")} style={{"width": "50%"}} className="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 bg-gray-100 sm:text-sm dark:bg-gray-800 dark:text-gray-300">
                             View all
                         </button>
 
-                        <button className="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm dark:hover:bg-gray-800 dark:text-gray-300 hover:bg-gray-100">
-                            Category 
-                        </button>
+                        <select style={{"cursor": "pointer", "width": "60%"}} className="px-5 dark:bg-gray-800 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm dark:hover:bg-gray-800 dark:text-gray-300 hover:bg-gray-900">
+                            <option value="category">Category</option>
+                            {
+                                txArray(data).map((tx: string, key) => (
+                                    <option onClick={() => setFilteredCategory(tx)} key={key} value={tx}>{tx}</option>
+                                ))
+                            }
+                        </select>
 
-                        <button className="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm dark:hover:bg-gray-800 dark:text-gray-300 hover:bg-gray-100">
-                            Price
-                        </button>
+                        <select style={{"cursor": "pointer", "width": "70%"}} className="px-5 py-2 text-xs font-medium text-gray-600 dark:bg-gray-800 transition-colors duration-200 sm:text-sm dark:hover:bg-gray-800 dark:text-gray-300 hover:bg-gray-900">
+                            <option value="price">Price</option>
+                            <option value="low_to_high">Low to High</option>
+                            <option value="high_to_low">High to Low</option>
+                        </select>
                     </div>
+
 
                     <div className="relative flex items-center mt-4 md:mt-0">
                         <span className="absolute">
@@ -230,7 +258,8 @@ export default function Transactions() {
                             </tr>
                         </thead>
                         <tbody>
-                        {data.map((el: Transaction, key: number) => (
+                        {filteredCategory ? 
+                        filteredData.map((el: Transaction, key: number) => (
                             <tr key={key} className="border-b border-opacity-20 dark:border-gray-700 dark:bg-gray-900">
                                 <td className="p-3" style={{ width: '20%' }}>
                                     <p className="text-center">{format(new Date(el.date))}</p>
@@ -253,7 +282,31 @@ export default function Transactions() {
                                     <button onClick={() => handleDelete(el)}><FontAwesomeIcon className="fa-thin" icon={faTrash} /></button>
                                 </td>
                             </tr>
-                        ))}
+                        )) : 
+                        data.map((el: Transaction, key: number) => (
+                            <tr key={key} className="border-b border-opacity-20 dark:border-gray-700 dark:bg-gray-900">
+                                <td className="p-3" style={{ width: '20%' }}>
+                                    <p className="text-center">{format(new Date(el.date))}</p>
+                                    <p className="dark:text-gray-400 text-center">{day(new Date(el.date))}</p>
+                                </td>
+                                <td className="p-3" style={{ width: '20%' }}>
+                                    <p className="text-center">{el.name}</p>
+                                </td>
+                                <td className="p-3" style={{ width: '20%' }}>
+                                    <p className="text-center">{el.amount}$</p>
+                                </td>
+                                <td className="p-3" style={{ width: '20%' }}>
+                                    <p className="text-center">{el.category}</p>
+                                </td>
+                                <td className="p-3 text-right" style={{ width: '20%' }}>
+                                    <p className="text-center">{el.recurring.toString()}</p>
+                                </td>
+                                <td className="p-3 dark:bg-gray-800">
+                                    <button onClick={() => handleEdit(el)}><FontAwesomeIcon className="fa-thin mb-2" icon={faPen} /></button>
+                                    <button onClick={() => handleDelete(el)}><FontAwesomeIcon className="fa-thin" icon={faTrash} /></button>
+                                </td>
+                            </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>

@@ -61,7 +61,7 @@ export default function Wallet() {
             </div>
             <div className="col-span-full sm:col-span-3">
               <label htmlFor="date" className="text-sm mb-2">Date</label>
-              <input value={date.toLocaleDateString()} onChange={handleDateChange} id="date" type="date" placeholder="Date" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>
+              <input value={date.toISOString().substr(0, 10)} onChange={handleDateChange} id="date" type="date" placeholder="Date" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>  
             </div>
             <div className="col-span-full sm:col-span-2">
               <label htmlFor="state" className="text-sm block mb-2">Is it recurring?</label>
@@ -77,7 +77,7 @@ export default function Wallet() {
                 </div>
             </div>
           </div>
-          <button type="submit" className="px-4 py-2 border rounded-md dark:border-gray-100">Edit Transaction</button>
+          <button type="submit" className="px-4 py-2 border rounded-md dark:border-gray-100">Add Transaction</button>
         </fieldset>
       </form>
   )
