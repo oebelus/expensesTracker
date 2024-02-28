@@ -1,6 +1,8 @@
 import axios from "axios"
 import { useState } from "react"
 import { toast } from "react-toastify"
+import { getError } from "../../utils"
+import { ApiError } from "../types/ApiError"
 
 export default function SignUp() {
     const [firstName, setFirstName] = useState("") 
@@ -15,14 +17,17 @@ export default function SignUp() {
             toast.error("Passwords Don't match")
             return
         }
-        await axios.post('http://localhost:4000/users/signup', {
+        await axios.post('http://localhost:4000/users/signup/', {
             firstName,
             familyName,
             email,
             password
         })
-        .then(response => console.log(response.data))
-        .catch(err => toast.error(err))
+        .then(response => {
+            console.log(response.data)
+            localStorage.setItem('userId', response.data._id)
+        })
+        .catch(err => console.log(getError(err as ApiError)))
     }
 
     return (

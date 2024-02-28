@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 import { urlencoded } from 'body-parser';
 import { userRouter } from './routers/userRouter';
+import { transactionRouter } from './routers/transactionRouter';
 
 dotenv.config()
 
@@ -30,6 +31,7 @@ app.use(express.json())
 app.use(urlencoded({ extended: true }))
 
 app.use('/users', userRouter)
+app.use('/transactions', transactionRouter)
 
 const PORT = 4000
 

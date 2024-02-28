@@ -14,7 +14,9 @@ export default function Login() {
             email,
             password
         })
-        .then(response => console?.log(response))
+        .then(response => {
+            localStorage.setItem("userId", response.data._id)
+        })
         .catch(err => {
             console.log(getError(err as ApiError))
             toast.error(err)

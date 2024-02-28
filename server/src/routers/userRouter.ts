@@ -18,7 +18,7 @@ userRouter.post("/login", async (req: Request, res: Response) => {
     const user = await UserModel.findOne({ email: req.body.email })
 
     if (user) {
-        if (bcrypt.compareSync(req.body.password, user.password)) {
+        if (req.body.password=== user.password) {
             res.json({
                 _id: user._id,
                 firstName: user.firstName,
@@ -29,6 +29,7 @@ userRouter.post("/login", async (req: Request, res: Response) => {
             return
         }
         res.status(401).json({ message: "Invalid Email or Password" })
+        return
     }
     res.status(404).json({ message: "User Doesn't Exist" })
 })

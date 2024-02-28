@@ -1,4 +1,5 @@
-import { modelOptions, prop, getModelForClass } from "@typegoose/typegoose";
+import { modelOptions, prop, getModelForClass, Ref } from "@typegoose/typegoose";
+import { Transaction } from "./transactionModel";
 
 @modelOptions({ schemaOptions: {timestamps: true} })
 
@@ -14,8 +15,14 @@ export class User {
     @prop({ required: true, unique: true})
     public email!: string
 
+    @prop()
+    public image?: string
+
     @prop({ required: true})
     public password!: string
+
+    @prop({ ref: () => Transaction })
+    public transactions?: Ref<Transaction>[]
 }
 
 export const UserModel = getModelForClass(User)

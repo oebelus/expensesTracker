@@ -4,5 +4,5 @@ type User = {
     familyName: string,
     email: string,
     password: string,
-    token: string
+    token: string,
 }
