@@ -44,7 +44,7 @@ html,
   -moz-tab-size: 4;
   /* 3 */
   -o-tab-size: 4;
-  tab-size: 4;
+     tab-size: 4;
   /* 3 */
   font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   /* 4 */
@@ -89,7 +89,7 @@ Add the correct text decoration in Chrome, Edge, and Safari.
 
 abbr:where([title]) {
   -webkit-text-decoration: underline dotted;
-  text-decoration: underline dotted;
+          text-decoration: underline dotted;
 }
 
 /*
@@ -446,8 +446,8 @@ video {
 
 [type='text'],input:where(:not([type])),[type='email'],[type='url'],[type='password'],[type='number'],[type='date'],[type='datetime-local'],[type='month'],[type='search'],[type='tel'],[type='time'],[type='week'],[multiple],textarea,select {
   -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   background-color: #fff;
   border-color: #6b7280;
   border-width: 1px;
@@ -509,7 +509,7 @@ select {
   background-size: 1.5em 1.5em;
   padding-right: 2.5rem;
   -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
+          print-color-adjust: exact;
 }
 
 [multiple],[size]:where(select:not([size="1"])) {
@@ -519,22 +519,22 @@ select {
   background-size: initial;
   padding-right: 0.75rem;
   -webkit-print-color-adjust: unset;
-  print-color-adjust: unset;
+          print-color-adjust: unset;
 }
 
 [type='checkbox'],[type='radio'] {
   -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   padding: 0;
   -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
+          print-color-adjust: exact;
   display: inline-block;
   vertical-align: middle;
   background-origin: border-box;
   -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none;
+     -moz-user-select: none;
+          user-select: none;
   flex-shrink: 0;
   height: 1rem;
   width: 1rem;
@@ -580,8 +580,8 @@ select {
 @media (forced-colors: active)  {
   [type='checkbox']:checked {
     -webkit-appearance: auto;
-    -moz-appearance: auto;
-    appearance: auto;
+       -moz-appearance: auto;
+            appearance: auto;
   }
 }
 
@@ -592,8 +592,8 @@ select {
 @media (forced-colors: active)  {
   [type='radio']:checked {
     -webkit-appearance: auto;
-    -moz-appearance: auto;
-    appearance: auto;
+       -moz-appearance: auto;
+            appearance: auto;
   }
 }
 
@@ -614,8 +614,8 @@ select {
 @media (forced-colors: active)  {
   [type='checkbox']:indeterminate {
     -webkit-appearance: auto;
-    -moz-appearance: auto;
-    appearance: auto;
+       -moz-appearance: auto;
+            appearance: auto;
   }
 }
 
@@ -1090,10 +1090,6 @@ select {
   width: 100%;
 }
 
-.min-w-full {
-  min-width: 100%;
-}
-
 .max-w-7xl {
   max-width: 80rem;
 }
@@ -1306,10 +1302,6 @@ select {
   border-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
 
-.border-opacity-20 {
-  --tw-border-opacity: 0.2;
-}
-
 .bg-blue-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(191 219 254 / var(--tw-bg-opacity));
@@ -1370,7 +1362,7 @@ select {
 
 .object-contain {
   -o-object-fit: contain;
-  object-fit: contain;
+     object-fit: contain;
 }
 
 .p-1 {
@@ -1379,10 +1371,6 @@ select {
 
 .p-2 {
   padding: 0.5rem;
-}
-
-.p-3 {
-  padding: 0.75rem;
 }
 
 .p-4 {
@@ -1485,16 +1473,8 @@ select {
   padding-top: 2.5rem;
 }
 
-.text-left {
-  text-align: left;
-}
-
 .text-center {
   text-align: center;
-}
-
-.text-right {
-  text-align: right;
 }
 
 .text-2xl {
@@ -1890,10 +1870,6 @@ select {
     --tw-space-y-reverse: 0;
     margin-top: calc(0px * calc(1 - var(--tw-space-y-reverse)));
     margin-bottom: calc(0px * var(--tw-space-y-reverse));
-  }
-
-  .sm\:p-4 {
-    padding: 1rem;
   }
 
   .sm\:px-6 {
