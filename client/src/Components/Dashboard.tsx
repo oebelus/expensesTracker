@@ -1,37 +1,111 @@
+import { useEffect, useState } from "react";
 import Card from "./dashboard/Card";
-import IncomeHistory from "./dashboard/IncomeHistory";
 import Plot from "./dashboard/chart/Plot";
-
-const cardsData = [
-  { percent: "25%", name: "Total Revenue", money: 100, color: "bg-violet-200", text: "text-violet-600" },
-  { percent: "50%", name: "Total Expense", money: 200, color: "bg-pink-100", text: "text-pink-600" },
-  { percent: "75%", name: "Total Income", money: 300, color: "bg-green-200", text: "text-green-600" }
-];
+import axios from "axios";
+import { Transaction } from "../types/Transaction";
+import { MonthlyData } from "../types/MonthlyData";
+import TxHistory from "./dashboard/TxHistory";
+import { getError } from "../../utils";
+import { ApiError } from "../types/ApiError";                                                                                                                                 
 
 export default function Dashboard() {
+  const [monthlyData, setMonthlyData] = useState<MonthlyData>({
+    income: new Array(12).fill(0),
+    expense: new Array(12).fill(0),
+    budget: new Array(12).fill(0),
+  });
+
+  const [history, setHistory] = useState<Transaction[]>([])
+  const [firstName, setFistName] = useState("")
+
+  const year = "2023"
+  const userId = localStorage.getItem("userId")
+
+  useEffect(() => {
+    axios.get(`http://localhost:4000/users/${userId}`)
+      .then((response) => setFistName(response.data.firstName))
+      .catch((err) => getError(err as ApiError))
+  })
+
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    let transactions: Transaction[] = []
+    axios.get(`http://localhost:4000/transactions/${userId}`)
+        .then(response => {
+            transactions = response.data;
+            const monthlyTotals = {
+                income: new Array(12).fill(0),
+                expense: new Array(12).fill(0),
+                budget: new Array(12).fill(0),
+            };
+
+            transactions.filter((transaction: Transaction) => {
+                return new Date(transaction.date).getFullYear() === new Date(year).getFullYear() 
+            })
+
+            const transactionsHistory = transactions.sort((a, b) =>
+              new Date(a.date).getTime() - new Date(b.date).getTime()
+            )
+            setHistory(transactionsHistory)
+
+            transactions.forEach((transaction: Transaction) => {
+                const monthIndex = new Date(transaction.date).getMonth();
+                const transactionAmount = parseInt(transaction.amount)
+                if (transactionAmount > 0) {
+                    monthlyTotals.income[monthIndex] += transaction.amount;
+                } else if (transactionAmount < 0) {
+                    monthlyTotals.expense[monthIndex] += Math.abs(transactionAmount); 
+                } 
+                monthlyTotals.budget[monthIndex] = monthlyTotals.income[monthIndex] - monthlyTotals.expense[monthIndex]
+            });
+
+            setMonthlyData(monthlyTotals);
+        })
+        .catch(error => console.log(error));
+  }, [year]);
+
+  const budget = monthlyData.budget.reduce((a, b) => {return a + b})
+  const expense = monthlyData.expense.reduce((a, b) => {return a + b})
+  const income: number = monthlyData.income.reduce((a, b) => {return a + b})
+
+  const total = budget + expense + income
+
+  const pBudget = ((budget/total)*100).toFixed(2)
+  const pExpense = ((expense/total)*100).toFixed(2)
+  const pIncome = ((income/total)*100).toFixed(2)
+
+  const cardsData = [
+    { percent: `${pBudget}%`, name: "Total Budget", money: budget, color: "bg-violet-400", shadow: "bg-violet-600", text: "text-violet-900" },
+    { percent: `${pExpense}%`, name: "Total Expense", money: expense, color: "bg-pink-400", shadow: "bg-pink-600", text: "text-pink-900" },
+    { percent: `${pIncome}%`, name: "Total Income", money: income, color: "bg-green-400", shadow: "bg-green-600", text: "text-green-900" }
+  ];
+  
   return (
     <section className="p-6 dark:bg-gray-900 dark:text-gray-50">
-    <div id="dashboard" className="grid grid-cols-4">
-      <div className="bg-white-200 col-span-3">
-        <Plot/>
-        <div className="gap-4 p-4 flex grid grid-cols-3">
-          {cardsData.map((card, key) => {
-            return (
-              <Card 
-                key={key} 
-                percent={card.percent} 
-                name={card.name} 
-                money={card.money} 
-                color={card.color}
-                text={card.text}
-              />
-            )
-          })}
+      <h1>Welcome to your Dashboard, {firstName}</h1>
+      <div id="dashboard" className="grid grid-cols-4">
+        <div className="bg-white-200 col-span-3">
+          <Plot monthlyData={monthlyData} />
+          <div className="p-4 justify-center items-center flex grid grid-cols-3">
+            {cardsData.map((card, key) => {
+              return (
+                <Card 
+                  key={key} 
+                  percent={card.percent} 
+                  name={card.name} 
+                  money={card.money} 
+                  color={card.color}
+                  text={card.text}
+                  shadow={card.shadow}
+                />
+              )
+            })}
+          </div>
         </div>
-        <IncomeHistory/>
+        <div className="col-span-1">
+          <TxHistory history={history}/>
+        </div>
       </div>
-      <div className="bg-blue-200 col-span-1">2</div>
-    </div>
     </section>
   );
 }

@@ -14,11 +14,29 @@ userRouter.get('/', async (req: Request, res: Response) => {
     }
 })
 
+userRouter.get('/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const user = await UserModel.findOne({_id: userId})
+        if (user) {
+            res.json({
+                _id: user._id,
+                firstName: user.firstName,
+                familyName: user.familyName,
+                email: user.email,
+                token: generateToken(user)
+            })
+        }
+    } catch (error) { 
+        res.status(404).json({ error: "User Not Found" })
+    }
+})
+
 userRouter.post("/login", async (req: Request, res: Response) => {
     const user = await UserModel.findOne({ email: req.body.email })
 
     if (user) {
-        if (req.body.password=== user.password) {
+        if (req.body.password === user.password) {
             res.json({
                 _id: user._id,
                 firstName: user.firstName,

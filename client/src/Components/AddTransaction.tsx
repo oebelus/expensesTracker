@@ -10,6 +10,7 @@ export default function Wallet() {
   const [category, setCategory] = useState<Transaction['category']>("")
   const [date, setDate] = useState<Transaction['date']>(new Date())
   const [recurring, setRecurring] = useState<Transaction['recurring']>(false)
+  const [txType, setTxType] = useState<Transaction['txType']>("")
 
   const userId = localStorage.getItem("userId")
 
@@ -29,10 +30,11 @@ export default function Wallet() {
     console.log("userId", userId)
     await axios.post(`http://localhost:4000/transactions/AddTransaction/${userId}`, {
       name,
-      amount,
+      amount: txType === "expense" ? `-${amount}` : `+${amount}`,
       category,
       date,
-      recurring
+      recurring,
+      txType
     })
     .then((response) => {console.log(userId); console.log("response", response, response.data.userId)})
     .catch((err) => console.log(getError(err as ApiError)))
@@ -67,12 +69,25 @@ export default function Wallet() {
               <label htmlFor="state" className="text-sm block mb-2">Is it recurring?</label>
                 <div className="flex">
                   <div className="flex items-center mr-4">
-                      <input id="default-radio-1" type="radio" onChange={(e) => setRecurring(dictionary[e.target.value])} value="yes" name="default-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                      <label htmlFor="default-radio-1" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Yes</label>
+                      <input id="yes" type="radio" name="recurring" onChange={(e) => setRecurring(dictionary[e.target.value])} value="yes" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                      <label htmlFor="yes" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Yes</label>
                   </div>
                   <div className="flex items-center">
-                      <input checked id="default-radio-2" type="radio" onChange={(e) => setRecurring(dictionary[e.target.value])} value="no" name="default-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                      <label htmlFor="default-radio-2" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">No</label>
+                      <input id="no" type="radio" name="recurring" onChange={(e) => setRecurring(dictionary[e.target.value])} value="no" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                      <label htmlFor="no" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">No</label>
+                  </div>
+                </div>
+            </div>
+            <div className="col-span-full sm:col-span-2">
+              <label htmlFor="state" className="text-sm block mb-2">Transaction Type</label>
+                <div className="flex">
+                  <div className="flex items-center mr-4">
+                      <input id="expense" type="radio" name="txType" onChange={(e) => setTxType(e.target.value)} value="expense" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                      <label htmlFor="expense" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Expense</label>
+                  </div>
+                  <div className="flex items-center">
+                      <input id="income" type="radio" name="txType" onChange={(e) => setTxType(e.target.value)} value="income" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                      <label htmlFor="income" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Income</label>
                   </div>
                 </div>
             </div>

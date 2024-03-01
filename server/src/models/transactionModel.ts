@@ -18,8 +18,11 @@ export class Transaction {
     @prop({ required: true})
     public date!: Date
 
-    @prop({ required: true})
+    @prop({ required: true, default: false})
     public recurring!: boolean
+
+    @prop({ required: true })
+    public txType!: string
 
     @prop()
     public userId?: string

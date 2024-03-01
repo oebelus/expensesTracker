@@ -10,6 +10,7 @@ import {
 } from 'chart.js';
 
 import { faker } from '@faker-js/faker';
+import axios from 'axios';
 
 ChartJS.register(
     CategoryScale,
@@ -22,6 +23,10 @@ ChartJS.register(
 );
 
 const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+const userId = localStorage.getItem('userId');
+
+axios.get(`http://localhost:4000/transactions/${userId}`).then((response) => console.log(response)).catch((err) => console.log(err));
 
 export const chartOptions = {
     responsive: true,

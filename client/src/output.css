@@ -44,7 +44,7 @@ html,
   -moz-tab-size: 4;
   /* 3 */
   -o-tab-size: 4;
-  tab-size: 4;
+     tab-size: 4;
   /* 3 */
   font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   /* 4 */
@@ -89,7 +89,7 @@ Add the correct text decoration in Chrome, Edge, and Safari.
 
 abbr:where([title]) {
   -webkit-text-decoration: underline dotted;
-  text-decoration: underline dotted;
+          text-decoration: underline dotted;
 }
 
 /*
@@ -446,8 +446,8 @@ video {
 
 [type='text'],input:where(:not([type])),[type='email'],[type='url'],[type='password'],[type='number'],[type='date'],[type='datetime-local'],[type='month'],[type='search'],[type='tel'],[type='time'],[type='week'],[multiple],textarea,select {
   -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   background-color: #fff;
   border-color: #6b7280;
   border-width: 1px;
@@ -509,7 +509,7 @@ select {
   background-size: 1.5em 1.5em;
   padding-right: 2.5rem;
   -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
+          print-color-adjust: exact;
 }
 
 [multiple],[size]:where(select:not([size="1"])) {
@@ -519,22 +519,22 @@ select {
   background-size: initial;
   padding-right: 0.75rem;
   -webkit-print-color-adjust: unset;
-  print-color-adjust: unset;
+          print-color-adjust: unset;
 }
 
 [type='checkbox'],[type='radio'] {
   -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   padding: 0;
   -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
+          print-color-adjust: exact;
   display: inline-block;
   vertical-align: middle;
   background-origin: border-box;
   -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none;
+     -moz-user-select: none;
+          user-select: none;
   flex-shrink: 0;
   height: 1rem;
   width: 1rem;
@@ -580,8 +580,8 @@ select {
 @media (forced-colors: active)  {
   [type='checkbox']:checked {
     -webkit-appearance: auto;
-    -moz-appearance: auto;
-    appearance: auto;
+       -moz-appearance: auto;
+            appearance: auto;
   }
 }
 
@@ -592,8 +592,8 @@ select {
 @media (forced-colors: active)  {
   [type='radio']:checked {
     -webkit-appearance: auto;
-    -moz-appearance: auto;
-    appearance: auto;
+       -moz-appearance: auto;
+            appearance: auto;
   }
 }
 
@@ -614,8 +614,8 @@ select {
 @media (forced-colors: active)  {
   [type='checkbox']:indeterminate {
     -webkit-appearance: auto;
-    -moz-appearance: auto;
-    appearance: auto;
+       -moz-appearance: auto;
+            appearance: auto;
   }
 }
 
@@ -839,10 +839,6 @@ select {
 
 .inset-0 {
   inset: 0px;
-}
-
-.inset-0\.5 {
-  inset: 0.125rem;
 }
 
 .inset-y-0 {
@@ -1191,6 +1187,14 @@ select {
   flex-grow: 1;
 }
 
+.table-auto {
+  table-layout: auto;
+}
+
+.border-collapse {
+  border-collapse: collapse;
+}
+
 .origin-top-right {
   transform-origin: top right;
 }
@@ -1484,6 +1488,11 @@ select {
   --tw-border-opacity: 0.2;
 }
 
+.bg-blue-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(191 219 254 / var(--tw-bg-opacity));
+}
+
 .bg-blue-700 {
   --tw-bg-opacity: 1;
   background-color: rgb(29 78 216 / var(--tw-bg-opacity));
@@ -1572,7 +1581,7 @@ select {
 
 .object-contain {
   -o-object-fit: contain;
-  object-fit: contain;
+     object-fit: contain;
 }
 
 .p-1 {
@@ -1839,9 +1848,9 @@ select {
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 
-.text-green-900 {
+.text-green-600 {
   --tw-text-opacity: 1;
-  color: rgb(20 83 45 / var(--tw-text-opacity));
+  color: rgb(22 163 74 / var(--tw-text-opacity));
 }
 
 .text-indigo-400 {
@@ -1849,14 +1858,14 @@ select {
   color: rgb(129 140 248 / var(--tw-text-opacity));
 }
 
-.text-pink-900 {
+.text-pink-600 {
   --tw-text-opacity: 1;
-  color: rgb(131 24 67 / var(--tw-text-opacity));
+  color: rgb(219 39 119 / var(--tw-text-opacity));
 }
 
-.text-violet-900 {
+.text-violet-600 {
   --tw-text-opacity: 1;
-  color: rgb(76 29 149 / var(--tw-text-opacity));
+  color: rgb(124 58 237 / var(--tw-text-opacity));
 }
 
 .text-white {
@@ -1878,10 +1887,6 @@ select {
 
 .opacity-100 {
   opacity: 1;
-}
-
-.opacity-50 {
-  opacity: 0.5;
 }
 
 .shadow {
@@ -2128,10 +2133,6 @@ select {
   --tw-ring-offset-color: #1f2937;
 }
 
-.group:hover .group-hover\:opacity-100 {
-  opacity: 1;
-}
-
 @media (min-width: 640px) {
   .sm\:static {
     position: static;
@@ -2169,10 +2170,6 @@ select {
     display: block;
   }
 
-  .sm\:flex {
-    display: flex;
-  }
-
   .sm\:hidden {
     display: none;
   }
@@ -2207,12 +2204,6 @@ select {
 
   .sm\:justify-center {
     justify-content: center;
-  }
-
-  .sm\:space-x-2 > :not([hidden]) ~ :not([hidden]) {
-    --tw-space-x-reverse: 0;
-    margin-right: calc(0.5rem * var(--tw-space-x-reverse));
-    margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
   }
 
   .sm\:space-x-4 > :not([hidden]) ~ :not([hidden]) {

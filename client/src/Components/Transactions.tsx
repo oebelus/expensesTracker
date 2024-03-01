@@ -4,12 +4,12 @@ import { Transaction } from "../types/Transaction";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Modal from "@mui/material/Modal"
-import { getError } from "../../utils";
+import { day, format, getError } from "../../utils";
 import { ApiError } from "../types/ApiError";
 import { toast } from "react-toastify";
 
 export default function Transactions() {
-    const [data, setData] = useState([]);
+    const [data, setData] = useState<Transaction[]>([]);
     const [edit, setEdit] = useState<boolean>(false)
     const [del, setDel] = useState<boolean>(false)
 
@@ -18,28 +18,53 @@ export default function Transactions() {
     const [category, setCategory] = useState<Transaction['category']>("")
     const [date, setDate] = useState<Transaction['date']>(new Date())
     const [recurring, setRecurring] = useState<Transaction['recurring']>(false)
+    const [txType, setTxType] = useState<Transaction['txType']>("expense")
     const [txId, setTxId] = useState("")
 
     const [filteredCategory, setFilteredCategory] = useState("")
-    const [filteredData, setFilteredData] = useState([])
+    const [filteredData, setFilteredData] = useState<Transaction[]>([])
+
+    const minDate = new Date(new Date().setDate(1))
+    minDate.setHours(1, 0, 0, 0)
+
+    const [min, setMin] = useState<Date>(minDate)
+    const [max, setMax] = useState<Date>(new Date())
+
+    const [prompt, setPrompt] = useState<Transaction['name']>("")
     
     const userId = localStorage.getItem("userId");
 
     useEffect(() => {
-        if (filteredCategory !== "") {
-            axios.get(`http://localhost:4000/transactions/${userId}/${filteredCategory}`)
-            .then((response) => {
-                console.log(response);
-                setFilteredData(response.data);
-            });
-        } 
-        else {
-            axios.get(`http://localhost:4000/transactions/${userId}`)
+        axios.get(`http://localhost:4000/transactions/${userId}`)
             .then((response) => {
                 setData(response.data);
-            });
+                console.log(userId)
+            })
+            .catch((err) => {console.log(err)})
+
+        let filteredTransactions: Transaction[] = data
+        if (min && max) {
+            filteredTransactions = data.filter((transaction) => {
+                const minDate = new Date(min)
+                const maxDate = new Date(max)
+                const transactionDate = new Date((new Date(transaction.date)).toISOString().substr(0, 10))
+                return transactionDate >= minDate && new Date(transactionDate) <= maxDate
+            })
         }
-    }, [userId, filteredCategory]);
+        if (filteredCategory !== "") {
+            filteredTransactions = filteredTransactions.filter((transaction) => {
+                return transaction.category === filteredCategory
+            })
+        }
+
+        if (prompt !== "") {
+            filteredTransactions = filteredTransactions.filter((transaction) => {
+                return transaction.name!.toLowerCase().includes(prompt!.toLowerCase())
+            })
+        }
+        setFilteredData(filteredTransactions)
+    }, [data, min, max, filteredCategory, prompt, userId]);
+    
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedDate = e.target.value
@@ -50,21 +75,7 @@ export default function Transactions() {
     const dictionary: Record<string, boolean> = {
         "yes": true,
         "no": false
-    }
-    
-    function day(date: Date): string {
-        const days: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        return days[date.getDay()];
-    }   
-    
-    function format(date: Date): string {
-        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        const arr = date.toDateString().split(" ").splice(1, 4);
-        const day = arr[1];
-        arr[0] = day;
-        arr[1] = months[date.getMonth()];
-        return arr.join(" ");
-    }
+    }  
 
     const handleEdit = (selectedTransaction: Transaction) => {
         setName(selectedTransaction.name);
@@ -108,7 +119,8 @@ export default function Transactions() {
                 amount,
                 category,
                 date,
-                recurring
+                recurring,
+                txType
             });
             setEdit(false)
             axios.get(`http://localhost:4000/transactions/${userId}`)
@@ -126,6 +138,14 @@ export default function Transactions() {
             if (!filtered.includes(i.category)) filtered.push(i.category)
         }
         return filtered
+    }
+
+    function viewAll() {
+        setFilteredCategory("")
+        setPrompt("")
+        
+        setMin(minDate)
+        setMax(new Date())
     }
     
     return (
@@ -162,17 +182,30 @@ export default function Transactions() {
                                         <input onChange={handleDateChange} id="date" type="date" placeholder="Date" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>
                                     </div>
                                     <div className="col-span-full sm:col-span-2">
-                                        <label htmlFor="state" className="text-sm block mb-2">Is it recurring?</label>
+                                    <label htmlFor="state" className="text-sm block mb-2">Is it recurring?</label>
                                         <div className="flex">
                                             <div className="flex items-center mr-4">
-                                                <input id="default-radio-1" type="radio" onChange={(e) => setRecurring(dictionary[e.target.value])} value="yes" name="default-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                                                <label htmlFor="default-radio-1" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Yes</label>
+                                                <input id="yes" type="radio" name="recurring" onChange={(e) => setRecurring(dictionary[e.target.value])} value="yes" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                                                <label htmlFor="yes" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Yes</label>
                                             </div>
-                                        <div className="flex items-center">
-                                            <input checked id="default-radio-2" type="radio" onChange={(e) => setRecurring(dictionary[e.target.value])} value="no" name="default-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                                            <label htmlFor="default-radio-2" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">No</label>
+                                            <div className="flex items-center">
+                                                <input id="no" type="radio" name="recurring" onChange={(e) => setRecurring(dictionary[e.target.value])} value="no" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                                                <label htmlFor="no" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">No</label>
+                                            </div>
                                         </div>
-                                        </div>
+                                    </div>
+                                    <div className="col-span-full sm:col-span-2">
+                                        <label htmlFor="state" className="text-sm block mb-2">Transaction Type</label>
+                                            <div className="flex">
+                                                <div className="flex items-center mr-4">
+                                                    <input id="expense" type="radio" name="txType" onChange={(e) => setTxType(e.target.value)} value="expense" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                                                    <label htmlFor="expense" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Expense</label>
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <input id="income" type="radio" name="txType" onChange={(e) => setTxType(e.target.value)} value="income" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                                                    <label htmlFor="income" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Income</label>
+                                                </div>
+                                            </div>
                                     </div>
                                 </div>
                                 <button type="submit" className="px-4 py-2 border rounded-md dark:border-gray-100">Edit Transaction</button>
@@ -206,8 +239,8 @@ export default function Transactions() {
             <div className="container p-2 mx-auto sm:p-4 dark:text-gray-100">
                 <h2 className="mb-4 text-2xl font-semibold leadi">My Transactions</h2>
                 <div className="mt-6 md:flex md:items-center md:justify-between mb-6">
-                    <div className="inline-flex overflow-hidden bg-white border divide-x rounded-lg dark:bg-gray-900 rtl:flex-row-reverse dark:border-gray-700 dark:divide-gray-700">
-                        <button onClick={() => setFilteredCategory("")} style={{"width": "50%"}} className="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 bg-gray-100 sm:text-sm dark:bg-gray-800 dark:text-gray-300">
+                    <div style={{"width": "30%"}} className="inline-flex overflow-hidden bg-white border divide-x rounded-lg dark:bg-gray-900 rtl:flex-row-reverse dark:border-gray-700 dark:divide-gray-700">
+                        <button onClick={viewAll} style={{"width": "40%"}} className="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 bg-gray-100 sm:text-sm dark:bg-gray-800 dark:text-gray-300">
                             View all
                         </button>
 
@@ -219,15 +252,17 @@ export default function Transactions() {
                                 ))
                             }
                         </select>
-
-                        <select style={{"cursor": "pointer", "width": "70%"}} className="px-5 py-2 text-xs font-medium text-gray-600 dark:bg-gray-800 transition-colors duration-200 sm:text-sm dark:hover:bg-gray-800 dark:text-gray-300 hover:bg-gray-900">
-                            <option value="price">Price</option>
-                            <option value="low_to_high">Low to High</option>
-                            <option value="high_to_low">High to Low</option>
-                        </select>
                     </div>
-
-
+                       
+                    <div style={{"width": "35%"}} className="flex items-center">
+                        <div className="relative">
+                            <input name="start" value={min ? min.toISOString().substr(0, 10) : ""} onChange={(e) => setMin(new Date(e.target.value))} type="date" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date start"/>
+                        </div>
+                        <span className="mx-4 text-gray-500">to</span>
+                        <div className="relative">
+                            <input name="end" value={max ? max.toISOString().substr(0, 10) : ""} onChange={(e) => setMax(new Date(e.target.value))} type="date" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date end"/>
+                        </div>
+                    </div>
                     <div className="relative flex items-center mt-4 md:mt-0">
                         <span className="absolute">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-5 h-5 mx-3 text-gray-400 dark:text-gray-600">
@@ -235,7 +270,7 @@ export default function Transactions() {
                             </svg>
                         </span>
 
-                        <input type="text" placeholder="Search" className="block w-full py-1.5 pr-5 text-gray-700 bg-white border border-gray-200 rounded-lg md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"/>
+                        <input value={prompt} onChange={(e) => setPrompt(e.target.value)} type="text" placeholder="Search" className="block w-full py-1.5 pr-5 text-gray-700 bg-white border border-gray-200 rounded-lg md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"/>
                     </div>
                 </div>
                 <div className="overflow-x-auto mt-6">
@@ -258,7 +293,7 @@ export default function Transactions() {
                             </tr>
                         </thead>
                         <tbody>
-                        {filteredCategory ? 
+                        {(min || max || prompt !== "" || filteredCategory !== "") ? 
                         filteredData.map((el: Transaction, key: number) => (
                             <tr key={key} className="border-b border-opacity-20 dark:border-gray-700 dark:bg-gray-900">
                                 <td className="p-3" style={{ width: '20%' }}>
@@ -269,7 +304,7 @@ export default function Transactions() {
                                     <p className="text-center">{el.name}</p>
                                 </td>
                                 <td className="p-3" style={{ width: '20%' }}>
-                                    <p className="text-center">{el.amount}$</p>
+                                    <p className="text-center">{parseFloat(el.amount) > 0 ? `+${el.amount}` : el.amount}$</p>
                                 </td>
                                 <td className="p-3" style={{ width: '20%' }}>
                                     <p className="text-center">{el.category}</p>

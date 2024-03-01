@@ -7,18 +7,8 @@ transactionRouter.get('/:userId', async (req: Request, res: Response) => {
     const userId = req.params.userId;
     try {
         const transactions = await TransactionModel.find({userId: userId})
+        //console.log(transactions)
         res.status(200).json(transactions)
-    } catch (err) {
-        res.status(500).json({ error: 'Internal Server Error' })
-    }
-})
-
-transactionRouter.get('/:userId/:category', async (req: Request, res: Response) => {
-    const category = req.params.category
-    try {
-        const categoryTx = await TransactionModel.find({ category: category})
-        console.log(categoryTx)
-        res.status(200).json(categoryTx)
     } catch (err) {
         res.status(500).json({ error: 'Internal Server Error' })
     }
@@ -34,6 +24,7 @@ transactionRouter.post('/AddTransaction/:userId', async (req: Request, res: Resp
                 name: req.body.name,
                 date: new Date(req.body.date),
                 recurring: req.body.recurring,
+                txType: req.body.txType,
                 userId: userId
             } as Transaction)
         
@@ -68,6 +59,8 @@ transactionRouter.put('/editTransaction/:userId/:id', async (req: Request, res: 
         txToUpdate.name = updateTx.name
         txToUpdate.date = updateTx.date
         txToUpdate.recurring = dictionary[updateTx.recurring]
+        txToUpdate.txType = updateTx.txType
+
         console.log(txToUpdate)
         await txToUpdate.save()
         res.json(txToUpdate)
