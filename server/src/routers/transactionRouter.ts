@@ -7,7 +7,6 @@ transactionRouter.get('/:userId', async (req: Request, res: Response) => {
     const userId = req.params.userId;
     try {
         const transactions = await TransactionModel.find({userId: userId})
-        //console.log(transactions)
         res.status(200).json(transactions)
     } catch (err) {
         res.status(500).json({ error: 'Internal Server Error' })

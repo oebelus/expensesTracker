@@ -2,29 +2,26 @@ import { modelOptions, prop, getModelForClass } from "@typegoose/typegoose";
 
 @modelOptions({ schemaOptions: {timestamps: true} })
 
-export class Transaction {
+export class Budget {
     public _id?: string
 
     @prop({ required: true})
     public amount!: number
 
     @prop({ required: true})
-    public category!: string
+    public name!: string
 
-    @prop()
-    public name?: string
+    @prop({ required: true, default: false })
+    public isFull!: boolean
 
     @prop({ required: true})
-    public date!: Date
+    public remaining!: number
 
     @prop({ required: true, default: false})
     public recurring!: boolean
-
-    @prop({ required: true })
-    public txType!: string
 
     @prop()
     public userId?: string
 }
 
-export const TransactionModel = getModelForClass(Transaction)
+export const BudgetModel = getModelForClass(Budget)

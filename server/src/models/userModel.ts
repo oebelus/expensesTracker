@@ -1,5 +1,6 @@
 import { modelOptions, prop, getModelForClass, Ref } from "@typegoose/typegoose";
 import { Transaction } from "./transactionModel";
+import { Budget } from "./budgetModel"
 
 @modelOptions({ schemaOptions: {timestamps: true} })
 
@@ -23,6 +24,9 @@ export class User {
 
     @prop({ ref: () => Transaction })
     public transactions?: Ref<Transaction>[]
+
+    @prop({ ref: () => Transaction })
+    public budgets?: Ref<Budget>[]
 }
 
 export const UserModel = getModelForClass(User)

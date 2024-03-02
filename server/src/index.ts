@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 import { urlencoded } from 'body-parser';
 import { userRouter } from './routers/userRouter';
 import { transactionRouter } from './routers/transactionRouter';
+import { budgetRouter } from './routers/budgetRouter';
 
 dotenv.config()
 
@@ -32,6 +33,7 @@ app.use(urlencoded({ extended: true }))
 
 app.use('/users', userRouter)
 app.use('/transactions', transactionRouter)
+app.use('/budgets', budgetRouter)
 
 const PORT = 4000
 
