@@ -13,10 +13,9 @@ export default function Tracker() {
       setShowAddTransaction(prevState => !prevState);
   };
   return (
-    <div>
-        <div className="flex">
+        <div className="grid lg:grid-cols-5">
           <Sidebar/>
-          <div className="w-full">
+          <div className="lg:col-span-4 w-full">
             <DashNav />
             <section className="p-6 dark:bg-gray-800 dark:text-gray-50">
               <div className="head">
@@ -28,6 +27,5 @@ export default function Tracker() {
             </section>
           </div>
         </div>
-    </div>
   )
 }

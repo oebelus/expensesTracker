@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Transaction } from "../types/Transaction";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faPen, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Modal from "@mui/material/Modal"
 import { day, format, getError } from "../../utils";
 import { ApiError } from "../types/ApiError";
@@ -20,6 +20,11 @@ export default function Transactions() {
     const [recurring, setRecurring] = useState<Transaction['recurring']>(false)
     const [txType, setTxType] = useState<Transaction['txType']>("expense")
     const [txId, setTxId] = useState("")
+
+    const recurringDictionary: Record<string, > = {
+        "true": faCheck,
+        "false": faXmark
+    }
 
     const [filteredCategory, setFilteredCategory] = useState("")
     const [filteredData, setFilteredData] = useState<Transaction[]>([])
@@ -225,7 +230,6 @@ export default function Transactions() {
                     <div className="flex flex-col max-w-md gap-2 p-6 rounded-md shadow-md dark:bg-gray-900 dark:text-gray-100">
                         <h2 className="text-xl font-semibold leading-tight tracking-tight text-center">Delete Transaction</h2>
                         <p className="flex-1 text-center dark:text-gray-400">Are you sure that you want to delete this transaction?
-                            <a href="#" rel="noopener noreferrer" className="font-semibold dark:text-violet-400">Learn more</a>
                         </p>
                         <div className="flex justify-center gap-3 mt-6 sm:mt-8 sm:flex-row">
                             <button onClick={closeDel} className="px-6 py-2 rounded-sm">Cancel</button>
@@ -238,8 +242,8 @@ export default function Transactions() {
             
             <div className="container p-2 mx-auto sm:p-4 dark:text-gray-100">
                 <h2 className="mb-4 text-2xl font-semibold leadi">My Transactions</h2>
-                <div className="mt-6 md:flex md:items-center md:justify-between mb-6">
-                    <div style={{"width": "30%"}} className="inline-flex overflow-hidden bg-white border divide-x rounded-lg dark:bg-gray-900 rtl:flex-row-reverse dark:border-gray-700 dark:divide-gray-700">
+                <div className="mt-6 md:relative md:left-0 lg:flex lg:flex-row sm:flex-col sm:gap-4 md:flex-col md:gap-6 md:flex md:items-center md:justify-between">
+                    <div style={{"width": "80%"}} className=" sm:w-90 inline-flex overflow-hidden bg-white border divide-x rounded-lg dark:bg-gray-900 rtl:flex-row-reverse dark:border-gray-700 dark:divide-gray-700">
                         <button onClick={viewAll} style={{"width": "40%"}} className="px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 bg-gray-100 sm:text-sm dark:bg-gray-800 dark:text-gray-300">
                             View all
                         </button>
@@ -254,13 +258,13 @@ export default function Transactions() {
                         </select>
                     </div>
                        
-                    <div style={{"width": "35%"}} className="flex items-center">
+                    <div style={{"width": "35%"}} className="lg:flex mt-5 lg:mt-0 items-center relative lg:right-3">
                         <div className="relative">
-                            <input name="start" value={min ? min.toISOString().substr(0, 10) : ""} onChange={(e) => setMin(new Date(e.target.value))} type="date" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date start"/>
+                            <input name="start" value={min ? min.toISOString().substr(0, 10) : ""} onChange={(e) => setMin(new Date(e.target.value))} type="date" className="px-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-4 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date start"/>
                         </div>
                         <span className="mx-4 text-gray-500">to</span>
                         <div className="relative">
-                            <input name="end" value={max ? max.toISOString().substr(0, 10) : ""} onChange={(e) => setMax(new Date(e.target.value))} type="date" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date end"/>
+                            <input name="end" value={max ? max.toISOString().substr(0, 10) : ""} onChange={(e) => setMax(new Date(e.target.value))} type="date" className="px-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-4 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date end"/>
                         </div>
                     </div>
                     <div className="relative flex items-center mt-4 md:mt-0">
@@ -270,7 +274,7 @@ export default function Transactions() {
                             </svg>
                         </span>
 
-                        <input value={prompt} onChange={(e) => setPrompt(e.target.value)} type="text" placeholder="Search" className="block w-full py-1.5 pr-5 text-gray-700 bg-white border border-gray-200 rounded-lg md:w-80 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"/>
+                        <input value={prompt} onChange={(e) => setPrompt(e.target.value)} type="text" placeholder="Search" className="block py-1.5 pr-5 text-gray-700 bg-white border border-gray-200 rounded-lg md:w-70 placeholder-gray-400/70 pl-11 rtl:pr-11 rtl:pl-5 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"/>
                     </div>
                 </div>
                 <div className="overflow-x-auto mt-6">
@@ -310,7 +314,7 @@ export default function Transactions() {
                                     <p className="text-center">{el.category}</p>
                                 </td>
                                 <td className="p-3 text-right" style={{ width: '20%' }}>
-                                    <p className="text-center">{el.recurring.toString()}</p>
+                                    <p className="text-center"><FontAwesomeIcon icon={recurringDictionary[el.recurring.toString()]}/></p>
                                 </td>
                                 <td className="p-3 dark:bg-gray-800">
                                     <button onClick={() => handleEdit(el)}><FontAwesomeIcon className="fa-thin mb-2" icon={faPen} /></button>

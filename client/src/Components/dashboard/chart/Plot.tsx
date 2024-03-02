@@ -57,10 +57,9 @@ export default function Plot({ monthlyData }: { monthlyData: MonthlyData }) {
     };
 
     return (
-        <div className="w-large h-96 md:h-120 lg:h-144 xl:h-160 p-6 flex flex-col justify-center items-center">
+        <div className="lg:h-[400px] lg:w-[700px] justify-center flex items-center">
             <Line
-                width={"500px"}
-                height={"250px"}
+                height={"280px"}
                 options={chartOptions}
                 data={chartData}
             />

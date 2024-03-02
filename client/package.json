@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build-css": "postcss ./src/index.css -o ./public/index.css",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -24,6 +25,7 @@
     "darkmode-js": "^1.5.7",
     "faker": "^6.6.6",
     "flowbite": "^2.3.0",
+    "postcss-cli": "^11.0.0",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-datepicker": "^6.2.0",

@@ -92,7 +92,7 @@ export default function Wallet() {
                 </div>
             </div>
           </div>
-          <button type="submit" className="px-4 py-2 border rounded-md dark:border-gray-100">Add Transaction</button>
+          <button type="submit" style={{"width": "90%"}} className="px-4 py-2 border rounded-md dark:border-gray-100">Add</button>
         </fieldset>
       </form>
   )

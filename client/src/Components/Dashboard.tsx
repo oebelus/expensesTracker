@@ -7,6 +7,8 @@ import { MonthlyData } from "../types/MonthlyData";
 import TxHistory from "./dashboard/TxHistory";
 import { getError } from "../../utils";
 import { ApiError } from "../types/ApiError";                                                                                                                                 
+import UpcomingPayments from "./dashboard/UpcomingPayments";
+import TotalBalance from "./dashboard/TotalBalance";
 
 export default function Dashboard() {
   const [monthlyData, setMonthlyData] = useState<MonthlyData>({
@@ -17,13 +19,17 @@ export default function Dashboard() {
 
   const [history, setHistory] = useState<Transaction[]>([])
   const [firstName, setFistName] = useState("")
+  const [familyName, setFamilyName] = useState("")
 
   const year = "2023"
   const userId = localStorage.getItem("userId")
 
   useEffect(() => {
     axios.get(`http://localhost:4000/users/${userId}`)
-      .then((response) => setFistName(response.data.firstName))
+      .then((response) => {
+        setFistName(response.data.firstName)
+        setFamilyName(response.data.familyName)
+      })
       .catch((err) => getError(err as ApiError))
   })
 
@@ -75,18 +81,18 @@ export default function Dashboard() {
   const pIncome = ((income/total)*100).toFixed(2)
 
   const cardsData = [
-    { percent: `${pBudget}%`, name: "Total Budget", money: budget, color: "bg-violet-400", shadow: "bg-violet-600", text: "text-violet-900" },
-    { percent: `${pExpense}%`, name: "Total Expense", money: expense, color: "bg-pink-400", shadow: "bg-pink-600", text: "text-pink-900" },
-    { percent: `${pIncome}%`, name: "Total Income", money: income, color: "bg-green-400", shadow: "bg-green-600", text: "text-green-900" }
+    { percent: `${pBudget}%`, name: "Total Budget", money: budget, color: "bg-violet-400", border: "border-violet-200", shadow: "bg-violet-600", text: "text-violet-900" },
+    { percent: `${pExpense}%`, name: "Total Expense", money: expense, color: "bg-pink-400", border: "border-pink-200", shadow: "bg-pink-600", text: "text-pink-900" },
+    { percent: `${pIncome}%`, name: "Total Income", money: income, color: "bg-green-400", border: "border-green-200", shadow: "bg-green-600", text: "text-green-900" }
   ];
   
   return (
-    <section className="p-6 dark:bg-gray-900 dark:text-gray-50">
-      <h1>Welcome to your Dashboard, {firstName}</h1>
-      <div id="dashboard" className="grid grid-cols-4">
-        <div className="bg-white-200 col-span-3">
-          <Plot monthlyData={monthlyData} />
-          <div className="p-4 justify-center items-center flex grid grid-cols-3">
+    <section className="p-6 dark:bg-gray-900 dark:text-gray-50 overflow-y-hidden">
+      <h1 className="lg:text-2xl font-bold">Welcome to your Dashboard, {firstName}</h1>
+      <div id="dashboard" className="grid lg:grid-cols-4 sm:col-span-3">
+        <div className="bg-white-200 col-span-3 lg:col-span-3 flex-col">
+            <Plot monthlyData={monthlyData} />
+          <div className="flex flex-col shadow-md w-90 m-6 sm:flex-row gap-4 lg:mr-20">
             {cardsData.map((card, key) => {
               return (
                 <Card 
@@ -97,13 +103,16 @@ export default function Dashboard() {
                   color={card.color}
                   text={card.text}
                   shadow={card.shadow}
+                  border={card.border}
                 />
               )
             })}
           </div>
         </div>
-        <div className="col-span-1">
+        <div className="">
+            <TotalBalance  budget={budget} firstName={firstName} familyName={familyName}/>
           <TxHistory history={history}/>
+          <UpcomingPayments />
         </div>
       </div>
     </section>

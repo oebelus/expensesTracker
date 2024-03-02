@@ -24,7 +24,7 @@ export default function DashNav() {
                 <div className="flex flex-shrink-0 items-center">
                     <Link to="/Dashboard">
                         <h1 
-                        className="text-2xl dark:border-transparent dark:text-violet-400 dark:border-violet-400"
+                        className="text-2xl font-bold dark:border-transparent dark:text-violet-400 dark:border-violet-400"
                         style={{"cursor": "pointer"}}
                         >
                             Expense Tracker</h1>
