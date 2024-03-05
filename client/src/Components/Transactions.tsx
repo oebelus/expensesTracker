@@ -43,7 +43,6 @@ export default function Transactions() {
         axios.get(`http://localhost:4000/transactions/${userId}`)
             .then((response) => {
                 setData(response.data);
-                console.log(userId)
             })
             .catch((err) => {console.log(err)})
 

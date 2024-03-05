@@ -23,8 +23,9 @@ budgetRouter.post('/addBudget/:userId', async (req, res) => {
                 isFull: req.body.isFull,
                 remaining: req.body.remaining,
                 recurring: req.body.recurring,
-                userId: req.body.userId
+                userId: userId
             } as Budget)
+            console.log(budget, userId)
 
             res.json({
                 _id: budget._id,

@@ -7,7 +7,7 @@ export default function TxHistory({history}: {history: Transaction[]}) {
         <h1 className="text-xl font-bold">Recent Transactions</h1>
           {
             history.map((transaction, key) => ( new Date(transaction.date).getMonth() === new Date().getMonth() && 
-              <div key={key} className="max-w-md p-2 sm:flex sm:space-x-2 dark:bg-gray-900 dark:text-gray-100">
+              <div key={key} className="max-w-md p-2 sm:flex sm:space-x-2 dark:bg-gray-800 dark:text-gray-100">
                 <div className="flex flex-col space-y-4">
                   <div>
                     <h2 className="font-semibold">{transaction.name}</h2>

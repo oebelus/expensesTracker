@@ -13,6 +13,8 @@ import LoginPage from './pages/LoginPage.tsx'
 import SignupPage from './pages/SignupPage.tsx'
 import Tracker from './pages/Tracker.tsx'
 import WalletPage from './pages/WalletPage.tsx'
+import BudgetingPage from './pages/BudgetingPage.tsx'
+import SavingPage from './pages/SavingPage.tsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -22,7 +24,8 @@ const router = createBrowserRouter(
       <Route path='Signup' element={<SignupPage/>}></Route>
       <Route path='Dashboard' element={<Tracker/>}></Route>
       <Route path='Wallet' element={<WalletPage/>}></Route>
-      
+      <Route path="budgeting" element={<BudgetingPage/>}></Route>
+      <Route path="saving" element={<SavingPage/>}></Route>
     </Route>
   )
 )

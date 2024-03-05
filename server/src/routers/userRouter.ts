@@ -53,11 +53,12 @@ userRouter.post("/login", async (req: Request, res: Response) => {
 })
 
 userRouter.post("/signup", async (req: Request, res: Response) => {
+    const salt = bcrypt.genSaltSync(10);
     const user = await UserModel.create({
         firstName: req.body.firstName,
         familyName: req.body.familyName,
         email: req.body.email,
-        password: req.body.password
+        password: bcrypt.hashSync(req.body.password, salt)
     } as User)
 
     res.json({
@@ -65,6 +66,7 @@ userRouter.post("/signup", async (req: Request, res: Response) => {
         firstName: user.firstName,
         familyName: user.familyName,
         email: user.email,
-        token: generateToken(user)
+        token: generateToken(user),
+        password: bcrypt.hashSync(req.body.password, salt)
     })
 })

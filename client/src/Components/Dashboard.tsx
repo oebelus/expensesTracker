@@ -89,10 +89,10 @@ export default function Dashboard() {
   return (
     <section className="p-6 dark:bg-gray-900 dark:text-gray-50 overflow-y-hidden">
       <h1 className="lg:text-2xl font-bold">Welcome to your Dashboard, {firstName}</h1>
-      <div id="dashboard" className="grid lg:grid-cols-4 sm:col-span-3">
-        <div className="bg-white-200 col-span-3 lg:col-span-3 flex-col">
+      <div id="dashboard" className="grid gap-4 lg:grid-cols-4 sm:col-span-3">
+        <div className="mt-5 bg-gray-800 rounded-lg col-span-3 lg:col-span-3 flex-col">
             <Plot monthlyData={monthlyData} />
-          <div className="flex flex-col shadow-md w-90 m-6 sm:flex-row gap-4 lg:mr-20">
+          <div className="flex flex-col shadow-md w-90 m-6 sm:flex-row gap-4">
             {cardsData.map((card, key) => {
               return (
                 <Card 
@@ -109,10 +109,12 @@ export default function Dashboard() {
             })}
           </div>
         </div>
-        <div className="">
+        <div className="lg:grid lg:grid-rows-2 rounded-lg p-4 bg-gray-800 col-span-3 sm:col-span-3 lg:col-span-1 md:col-span-3 flex-col">
             <TotalBalance  budget={budget} firstName={firstName} familyName={familyName}/>
-          <TxHistory history={history}/>
-          <UpcomingPayments />
+            <div className="">
+              <TxHistory history={history}/>
+              <UpcomingPayments />
+            </div>
         </div>
       </div>
     </section>

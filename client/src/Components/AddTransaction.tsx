@@ -1,5 +1,5 @@
 import axios from "axios"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { getError } from "../../utils"
 import { ApiError } from "../types/ApiError"
 import { Transaction } from "../types/Transaction"
@@ -11,6 +11,8 @@ export default function Wallet() {
   const [date, setDate] = useState<Transaction['date']>(new Date())
   const [recurring, setRecurring] = useState<Transaction['recurring']>(false)
   const [txType, setTxType] = useState<Transaction['txType']>("")
+  const [budgetId, setBudgetId] = useState("")
+  const [budgets, setBudgets] = useState<Budget[]>([])
 
   const userId = localStorage.getItem("userId")
 
@@ -18,6 +20,12 @@ export default function Wallet() {
     "yes": true,
     "no": false
   }
+
+  useEffect(() => {
+    axios.get(`http://localhost:4000/budgets/${userId}`).then(
+      (response) => {setBudgets(response.data)}
+    )
+  }, [budgets, userId])
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedDate = e.target.value
@@ -27,7 +35,21 @@ export default function Wallet() {
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault()
-    console.log("userId", userId)
+    const length = budgets.length
+    
+    for (let i = 0; i < length; i++) {
+      if (budgets[i].name.toLowerCase() === category.toLowerCase()) {+
+        setBudgetId(budgets[i]._id)
+        const remaining = budgets[i].remaining - parseFloat(amount) 
+        axios.put(`http://localhost:4000/budgets/editBudget/${userId}/${budgetId}`, {
+          remaining: budgets[i].remaining,
+          amount: budgets[i].amount,
+          name: budgets[i].name,
+          recurring: budgets[i].recurring,
+          isFull: remaining <= budgets[i].amount ? true : false
+        }).then((response) => console.log("DONE", response, remaining)).catch((err) => getError(err as ApiError))
+      }
+    }
     await axios.post(`http://localhost:4000/transactions/AddTransaction/${userId}`, {
       name,
       amount: txType === "expense" ? `-${amount}` : `+${amount}`,
@@ -41,7 +63,6 @@ export default function Wallet() {
   }
 
   return (
-    
       <form onSubmit={handleSubmit} className="container flex flex-col mx-auto space-y-12">
         <fieldset className="grid grid-cols-4 gap-6 p-6 rounded-md shadow-sm dark:bg-gray-900">
           <div className="space-y-2 col-span-full lg:col-span-1">
