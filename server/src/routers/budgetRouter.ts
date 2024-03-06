@@ -46,19 +46,14 @@ budgetRouter.put('/editBudget/:userId/:id', async (req, res) => {
     try {
         const budgetId = req.params.id
         const updateBudget: Budget = req.body
-        const budgetToUpdate = await BudgetModel.findOne({_id: budgetId})
+        const budgetToUpdate = await BudgetModel.findByIdAndUpdate(budgetId, updateBudget, {new: true})
 
         if (!budgetToUpdate) return res.status(404).json({ error: 'Budget not found' });
 
-        budgetToUpdate.remaining = updateBudget.remaining
-        budgetToUpdate.amount = updateBudget.amount
-        budgetToUpdate.name = updateBudget.name
-        budgetToUpdate.recurring = updateBudget.recurring
-        budgetToUpdate.isFull = updateBudget.isFull
-
-        await budgetToUpdate.save()
         res.json(budgetToUpdate)
+        
     } catch (err) { 
+        console.log(err)
         res.status(500).json({ error: 'Internal Server Error' })
     }
 })

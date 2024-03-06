@@ -6,7 +6,7 @@ interface totalProps {
 
 export default function TotalBalance({ firstName, familyName, budget }: totalProps) {
     return (
-      <div className="mb-10 rounded-xl text-white shadow-2xl transition-transform transform lg:hover:scale-110 md:w-full">
+      <div className="lg:h-[30%] mb-6 rounded-xl text-white shadow-2xl transition-transform transform lg:hover:scale-110 md:w-full">
         <img className="relative object-cover w-full h-full rounded-xl" src="https://cdn.pixabay.com/photo/2014/06/16/23/39/black-370118_640.png" alt="Background" />
         <div className="w-full px-8 absolute top-3">
           <div className="flex justify-between mb-4">

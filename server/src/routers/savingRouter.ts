@@ -22,7 +22,7 @@ savingRouter.post('/addSaving/:userId', async (req, res) => {
                 name: req.body.name,
                 isFull: req.body.isFull,
                 remaining: req.body.remaining,
-                userId: req.body.userId
+                userId: userId
             } as Saving)
 
             res.json({

@@ -5,19 +5,15 @@ import { useEffect, useState } from "react"
 import { ApiError } from "../types/ApiError"
 import { getError } from "../../utils"
 import { Modal } from "@mui/material"
+import { toast } from "react-toastify"
 
 export default function Budget() {
-  const [addBudget, setAddBudget] = useState(false)
-  const [empty, setEmpty] = useState(false)
-
   const [add, setAdd] = useState<boolean>(false)
   const [edit, setEdit] = useState<boolean>(false)
-  const [del, setDel] = useState<boolean>(false)
 
   const [amount, setAmount] = useState<Budget["amount"]>()
   const [name, setName] = useState<Budget["name"]>("")
   const [remaining, setRemaining] = useState<Budget["remaining"]>()
-  const [isFull, setIsFull] = useState<Budget["isFull"]>(false)
   const [recurring, setRecurring] = useState<Budget["recurring"]>(false)
   const [budgetId, setBudgetId] = useState<Budget["_id"]>("")
   const [data, setData] = useState<Budget[]>([])
@@ -43,10 +39,13 @@ export default function Budget() {
       amount,
       name,
       remaining,
-      isFull: remaining === amount ? true : false,
+      isFull: remaining! > amount! ? true : false,
       recurring: recurring,
-    }).then((response) => {console.log("response", response, response.data.userId)})
-    .catch((err) => console.log(getError(err as ApiError)))
+    }).then(() => {
+      toast.success("Budget Added Successfully!")
+      setAdd(false)
+    })
+    .catch((err) => toast.error(getError(err as ApiError)))
   }
 
   const suggested = [
@@ -66,21 +65,13 @@ export default function Budget() {
     setEdit(false)
   }
 
-  const printtx = () => {
-    axios.get(`http://localhost:4000/budgets/${userId}`)
-    .then((response) => {
-      console.log(response.data)
-    })
-    .catch((err) => getError(err as ApiError))
-  }
-
   const openEdit = (selectedBudget: Budget) => {
     setEdit(true)
     setName(selectedBudget.name)
     setAmount(selectedBudget.amount)
     setRemaining(selectedBudget.remaining)
     setBudgetId(selectedBudget._id)
-    console.log(budgetId)
+    setRecurring(selectedBudget.recurring)
   }
 
   const handleEdit = (e: React.SyntheticEvent) => {
@@ -91,15 +82,38 @@ export default function Budget() {
           name: name,
           recurring: recurring,
           isFull: remaining! <= amount! ? true : false
-    }).then((response) => console.log("DONE", response, remaining)).catch((err) => getError(err as ApiError))
+    }).then(() => toast.success("Budget Edited Successfully")).catch((err) => toast.error(getError(err as ApiError)))
+    setEdit(false)
+  }
+
+  const handleDelete = () => {
+    axios.delete(`http://localhost:4000/budgets/deleteBudget/${userId}/${budgetId}`)
+    .then(() => {
+      toast("Budget Deleted Successfully!")
+      setEdit(false)
+    })
+    .catch((err) => getError(err as ApiError));
+  }
+
+  const handleAdd = () => {
+    setAdd(true)
+    setName("")
+    setAmount(0)
+    setRemaining(0)
+    setRecurring(false)
+  }
+
+  const suggestedBudget = (suggested: {name: string}) => {
+    setAdd(true)
+    setName(suggested.name)
   }
 
   return (
-    <div onClick={printtx} className="p-6 dark:bg-gray-800 dark:text-gray-50">
+    <div className="p-6 dark:bg-gray-800 dark:text-gray-50">
       <h1 className="text-3xl font-bold mb-4">Budget</h1>
       <p className="ml-4 mb-6"><FontAwesomeIcon icon={faArrowRight}/> Set your monthly spending limits</p>
-      <h2 className="text-2xl mb-10">Your budgets:</h2>
-      <button className="p-4" onClick={()=>setAdd(true)}><FontAwesomeIcon icon={faPlus}/> Add a Budget</button>
+      <h2 className="text-2xl mb-2">Your budgets:</h2>
+      <button className="p-4" onClick={handleAdd}><FontAwesomeIcon icon={faPlus}/> Add a Budget</button>
       <Modal
           open={add}
           onClose={closeAdd}
@@ -110,7 +124,7 @@ export default function Budget() {
           <fieldset className="grid grid-cols-4 gap-6 p-6 rounded-md shadow-sm dark:bg-gray-900">
             <div className="space-y-2 col-span-full lg:col-span-1">
               <p className="font-medium">Add a Budget</p>
-              <p className="text-xs">Provide Your Budget details</p>
+              <p className="text-xs">Provide Your Budget Details</p>
             </div>
             <div className="grid grid-cols-6 gap-4 col-span-full lg:col-span-3">
               <div className="col-span-full sm:col-span-3">
@@ -152,8 +166,8 @@ export default function Budget() {
           <form onSubmit={handleEdit} className="mt-40 text-white container flex flex-col mx-auto space-y-12">
           <fieldset className="grid grid-cols-4 gap-6 p-6 rounded-md shadow-sm dark:bg-gray-900">
             <div className="space-y-2 col-span-full lg:col-span-1">
-              <p className="font-medium">Add a Budget</p>
-              <p className="text-xs">Provide Your Budget details</p>
+              <p className="font-medium">Edit {name} Budget</p>
+              <p className="text-xs">Modify Your Budget Details</p>
             </div>
             <div className="grid grid-cols-6 gap-4 col-span-full lg:col-span-3">
               <div className="col-span-full sm:col-span-3">
@@ -166,7 +180,7 @@ export default function Budget() {
               </div>
               <div className="col-span-full sm:col-span-3">
                 <label htmlFor="remaining" className="text-sm mb-2">Remaining</label>
-                <input value={remaining} onChange={(e) => setRemaining(e.target.value)} id="category" type="number" placeholder="Category" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>
+                <input value={remaining} onChange={(e) => setRemaining(parseInt(e.target.value))} id="category" type="number" placeholder="Category" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>
               </div>
               <div className="col-span-full sm:col-span-2">
                 <label htmlFor="state" className="text-sm block mb-2">Is it recurring?</label>
@@ -182,7 +196,10 @@ export default function Budget() {
                   </div>
               </div>
             </div>
-            <button type="submit" style={{"width": "90%"}} className="px-4 py-2 border rounded-md dark:border-gray-100">Save</button>
+            <div className="flex gap-4">
+              <button type="submit" style={{"width": "90%"}} className="px-4 py-2 border rounded-md dark:border-gray-100">Save</button>
+              <button onClick={handleDelete} style={{"width": "90%"}} className="px-4 py-2 border rounded-md bg-violet-600 dark:border-gray-100">Delete</button>
+            </div>
           </fieldset>
         </form>  
       </Modal>
@@ -195,20 +212,25 @@ export default function Budget() {
                 <span className="text-sm">${budget.remaining} of ${budget.amount}</span>
                 <span className="text-sm text-gray-800 dark:text-white">You used {(budget.remaining / budget.amount)*100}%</span>
               </div>
-              <div className="flex w-full h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                <div className="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap transition duration-500 dark:bg-blue-500" style={{"width": "25%"}}></div>
+              <div 
+                className="flex w-full h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700" 
+                role="progressbar" 
+                aria-valuenow={(budget.remaining / budget.amount)*100} 
+                aria-valuemin={0} 
+                aria-valuemax={100}
+              >
+                <div className="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap transition duration-500 dark:bg-blue-500" style={{"width": `${(budget.remaining / budget.amount)*100}%`}}></div>
               </div>
             </div>
           )
         })
       }
-      
       <div>
         <h2 className="text-2xl mt-10">Suggested Budgets:</h2>
         {
           suggested.map((suggestion, key) => {
             return (
-              <div className="flex gap-4 mt-6 p-4 lg:ml-5 border rounded-lg lg:w-[60%]" style={{"cursor": "pointer"}} key={key}>
+              <div onClick={() => suggestedBudget(suggestion)} className="flex gap-4 mt-6 p-4 lg:ml-5 border rounded-lg lg:w-[60%]" style={{"cursor": "pointer"}} key={key}>
                 <FontAwesomeIcon className="mt-5" icon={suggestion.icon}/>
                 <div>
                   <h3>{suggestion.name}</h3>

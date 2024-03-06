@@ -50,9 +50,11 @@ export default function Dashboard() {
             })
 
             const transactionsHistory = transactions.sort((a, b) =>
-              new Date(a.date).getTime() - new Date(b.date).getTime()
+              new Date(b.date).getTime() - new Date(a.date).getTime()
             )
-            setHistory(transactionsHistory)
+            const length = transactionsHistory.length
+            const max = length < 4 ? length : 4
+            setHistory(transactionsHistory.splice(0, max))
 
             transactions.forEach((transaction: Transaction) => {
                 const monthIndex = new Date(transaction.date).getMonth();
@@ -109,7 +111,7 @@ export default function Dashboard() {
             })}
           </div>
         </div>
-        <div className="lg:grid lg:grid-rows-2 rounded-lg p-4 bg-gray-800 col-span-3 sm:col-span-3 lg:col-span-1 md:col-span-3 flex-col">
+        <div className="rounded-lg p-4 bg-gray-800 col-span-3 sm:col-span-3 lg:col-span-1 md:col-span-3 flex-col">
             <TotalBalance  budget={budget} firstName={firstName} familyName={familyName}/>
             <div className="">
               <TxHistory history={history}/>
