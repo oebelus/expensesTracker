@@ -1,4 +1,4 @@
-import { faArrowRight, faCar, faHouse, faLaptop, faPen, faPills, faPlane, faPlus } from "@fortawesome/free-solid-svg-icons"
+import { faArrowRight, faCar, faHouse, faLaptop, faPen, faPills, faPlane, faPlus, faWallet } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Modal } from "@mui/material"
 import axios from "axios"
@@ -15,6 +15,13 @@ export default function Budget() {
     { name: "Home", icon: faHouse },
     { name: "A New PC", icon: faLaptop },
   ]
+
+  const tips = [
+    { title: "Set up recurring transfers", p: "Automate your savings by setting up recurring transfers from your checking account to your savings account. This ensures that you consistently save money without having to remember to do it manually each time." },
+    { title: "Turn off automatic payments", p: "Review your automatic payments regularly to ensure you're not paying for services or subscriptions you no longer use. Turning off unnecessary automatic payments can help you save money each month." },
+    { title: "Pay your credit card balance in full", p: "Avoid accruing interest by paying off your credit card balance in full each month. This helps maintain a healthy credit score and saves you money on interest charges." },
+    { title: "Pay off your debt", p: "Create a plan to pay off your debt systematically. Start by focusing on high-interest debt first while making minimum payments on other debts. As you pay off each debt, allocate the freed-up funds towards the next debt until you become debt-free." }
+];
 
   const [add, setAdd] = useState<boolean>(false)
   const [edit, setEdit] = useState<boolean>(false)
@@ -50,7 +57,7 @@ export default function Budget() {
       isFull: remaining! > amount! ? true : false,
       recurring: recurring,
     }).then(() => {
-      toast.success("Saving Added Successfully!")
+      toast.success("Saving Plan Added Successfully!")
       setAdd(false)
     })
     .catch((err) => toast.error(getError(err as ApiError)))
@@ -202,12 +209,7 @@ export default function Budget() {
           </fieldset>
         </form>  
       </Modal>
-      <div className="bg-violet-100 border border-violet-400 text-violet-700 px-4 py-3 rounded relative" role="alert">
-        <strong className="font-bold">Holy smokes! </strong>
-        <span className="block sm:inline">Nothing to show here.</span>
-        <span className="absolute top-0 bottom-0 right-0 px-4 py-3">
-        </span>
-      </div>
+
       <div>
       {
         data.length > 0 && data.map((saving, key) => {
@@ -215,13 +217,13 @@ export default function Budget() {
             <div key={key} className="lg:w-[65%] p-4">
               <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">{saving.name} <button onClick={() => openEdit(saving)}><FontAwesomeIcon icon={faPen}/></button></h3>
               <div className="mb-2 flex justify-between items-center">
-                <span className="text-sm">${saving.remaining} of ${saving.amount}</span>
-                <span className="text-sm text-gray-800 dark:text-white">You used {(saving.remaining / saving.amount)*100}%</span>
+                <span className="text-sm">You have saved ${saving.remaining} towards your goal of ${saving.amount}</span>
+                <span className="text-sm text-gray-800 dark:text-white">{(saving.remaining / saving.amount)*100}%</span>
               </div>
               <div 
                 className="flex w-full h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700" 
                 role="progressbar" 
-                aria-valuenow={(saving.remaining / saving.amount)*100} 
+                aria-valuenow={100-(saving.remaining / saving.amount)*100} 
                 aria-valuemin={0} 
                 aria-valuemax={100}
               >
@@ -240,6 +242,20 @@ export default function Budget() {
                 <div>
                   <h3>{suggestion.name}</h3>
                   <p>Set a Saving Plan for this category</p>
+                </div>
+              </div>
+            )
+          })
+        }
+        <h2 className="text-2xl mt-10">Personalized tips to to improve your saving habits:</h2>
+        {
+          tips.map((tip, key) => {
+            return (
+              <div className="flex gap-4 mt-6 p-4 lg:ml-5 rounded-lg lg:w-[60%]" style={{"cursor": "pointer"}} key={key}>
+                <FontAwesomeIcon className="mt-3" icon={faWallet}/>
+                <div>
+                  <h3 className="font-bold text-xl">{tip.title}</h3>
+                  <p>{tip.p}</p>
                 </div>
               </div>
             )

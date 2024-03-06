@@ -38,11 +38,11 @@ export default function Wallet() {
     const length = budgets.length
     
     for (let i = 0; i < length; i++) {
-      if (budgets[i].name.toLowerCase() === category.toLowerCase()) {+
+      if (budgets[i].name.toLowerCase() === category.toLowerCase()) {
         setBudgetId(budgets[i]._id)
         const remaining = budgets[i].remaining - parseFloat(amount) 
         axios.put(`http://localhost:4000/budgets/editBudget/${userId}/${budgetId}`, {
-          remaining: budgets[i].remaining,
+          remaining: remaining,
           amount: budgets[i].amount,
           name: budgets[i].name,
           recurring: budgets[i].recurring,

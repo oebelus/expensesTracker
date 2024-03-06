@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Transaction } from "../types/Transaction";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faPen, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import Modal from "@mui/material/Modal"
 import { day, format, getError } from "../../utils";
 import { ApiError } from "../types/ApiError";
@@ -21,7 +22,10 @@ export default function Transactions() {
     const [txType, setTxType] = useState<Transaction['txType']>("expense")
     const [txId, setTxId] = useState("")
 
-    const recurringDictionary: Record<string, > = {
+    const [budgets, setBudgets] = useState<Budget[]>([])
+    const [budgetId, setBudgetId] = useState<Budget["_id"]>("")
+
+    const recurringDictionary: Record<string, IconDefinition> = {
         "true": faCheck,
         "false": faXmark
     }
@@ -91,19 +95,43 @@ export default function Transactions() {
         setEdit(true)
     }
 
+    useEffect(() => {
+        axios.get(`http://localhost:4000/budgets/${userId}`).then(
+          (response) => {setBudgets(response.data)}
+        )
+      }, [budgets, userId])
+
     const handleDelete = (selectedTransaction: Transaction) => {
         setDel(true)
         setTxId(selectedTransaction._id)
+        setCategory(selectedTransaction.category)
+        setAmount(selectedTransaction.amount)
     }
 
     const deleteTx = async () => {
         try {
             await axios.delete(`http://localhost:4000/transactions/deleteTransaction/${userId}/${txId}`)
+            const length = budgets.length
+            for (let i = 0; i < length; i++) {
+                if (budgets[i].name.toLowerCase() === category.toLowerCase()) {
+                  setBudgetId(budgets[i]._id)
+                  const remaining = budgets[i].remaining + Math.abs(parseFloat(amount)) 
+                  console.log("a", remaining, budgets[i].remaining, amount)
+                  axios.put(`http://localhost:4000/budgets/editBudget/${userId}/${budgetId}`, {
+                    remaining: remaining,
+                    amount: budgets[i].amount,
+                    name: budgets[i].name,
+                    recurring: budgets[i].recurring,
+                    isFull: remaining <= budgets[i].amount ? true : false
+                  }).then((response) => console.log("DONE", response, remaining)).catch((err) => getError(err as ApiError))
+                }
+            }
             setDel(false)
-            axios.get(`http://localhost:4000/transactions/${userId}`)
-                .then((response) => { setData(response.data); }
-            );
-        } catch (err) { console.log(getError(err as ApiError)) }
+            const response = await axios.get(`http://localhost:4000/transactions/${userId}`)
+            setData(response.data)
+        } catch(err) {
+            console.log(getError(err as ApiError))
+        }
         
     }
 

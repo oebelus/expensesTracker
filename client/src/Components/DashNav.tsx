@@ -8,6 +8,10 @@ function classNames(...classes: string[]) {
 }
 
 export default function DashNav() {
+  const userId = localStorage.getItem('userId')
+  const currentPath = window.location.pathname
+  const newUrl = currentPath.replace('/saving', '');
+  console.log(newUrl)
   return (
     <Disclosure as="nav" className="bg-gray-900">
         <>
@@ -22,13 +26,13 @@ export default function DashNav() {
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex flex-shrink-0 items-center">
-                    <Link to="/Dashboard">
+                    <a href={`${currentPath.replace(window.location.pathname, "dashboard")}`}>
                         <h1 
                         className="text-2xl font-bold dark:border-transparent dark:text-violet-400 dark:border-violet-400"
                         style={{"cursor": "pointer"}}
                         >
                             Expense Tracker</h1>
-                    </Link>
+                    </a>
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
                   
@@ -69,7 +73,7 @@ export default function DashNav() {
                       <Menu.Item>
                         {({ active }) => (
                           <a
-                            href="#"
+                            href={`${currentPath.replace(window.location.pathname, "profile")}`}
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
                             Your Profile
