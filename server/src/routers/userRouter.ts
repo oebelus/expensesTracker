@@ -25,7 +25,7 @@ userRouter.get('/:userId', async (req, res) => {
                 familyName: user.familyName,
                 email: user.email,
                 token: generateToken(user)
-            })
+            } as User)
         }
     } catch (error) { 
         res.status(404).json({ error: "User Not Found" })
