@@ -60,7 +60,6 @@ transactionRouter.put('/editTransaction/:userId/:id', async (req: Request, res: 
         txToUpdate.recurring = dictionary[updateTx.recurring]
         txToUpdate.txType = updateTx.txType
 
-        console.log(txToUpdate)
         await txToUpdate.save()
         res.json(txToUpdate)
     } catch (err) { 

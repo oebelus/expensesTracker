@@ -31,6 +31,7 @@ app.use(
 
 app.use(express.json())
 app.use(urlencoded({ extended: true }))
+app.use('../../../client/public', express.static('images'))
 
 app.use('/users', userRouter)
 app.use('/transactions', transactionRouter)
