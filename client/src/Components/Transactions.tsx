@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { Transaction } from "../types/Transaction";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faPen, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -8,6 +8,7 @@ import Modal from "@mui/material/Modal"
 import { day, format, getError } from "../../utils";
 import { ApiError } from "../types/ApiError";
 import { toast } from "react-toastify";
+import { initialState, reducer } from "../context";
 
 export default function Transactions() {
     const [data, setData] = useState<Transaction[]>([]);
@@ -41,10 +42,11 @@ export default function Transactions() {
 
     const [prompt, setPrompt] = useState<Transaction['name']>("")
     
-    const userId = localStorage.getItem("userId");
+    const [state, ] = useReducer(reducer, initialState)
+    const user = state.user
 
     useEffect(() => {
-        axios.get(`http://localhost:4000/transactions/${userId}`)
+        axios.get(`http://localhost:4000/transactions/${user._id}`)
             .then((response) => {
                 setData(response.data);
             })
@@ -71,7 +73,7 @@ export default function Transactions() {
             })
         }
         setFilteredData(filteredTransactions)
-    }, [data, min, max, filteredCategory, prompt, userId]);
+    }, [data, min, max, filteredCategory, prompt, user._id]);
     
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,10 +98,10 @@ export default function Transactions() {
     }
 
     useEffect(() => {
-        axios.get(`http://localhost:4000/budgets/${userId}`).then(
+        axios.get(`http://localhost:4000/budgets/${user._id}`).then(
           (response) => {setBudgets(response.data)}
         )
-      }, [budgets, userId])
+      }, [budgets, user])
 
     const handleDelete = (selectedTransaction: Transaction) => {
         setDel(true)
@@ -110,24 +112,25 @@ export default function Transactions() {
 
     const deleteTx = async () => {
         try {
-            await axios.delete(`http://localhost:4000/transactions/deleteTransaction/${userId}/${txId}`)
+            await axios.delete(`http://localhost:4000/transactions/deleteTransaction/${user._id}/${txId}`)
             const length = budgets.length
             for (let i = 0; i < length; i++) {
                 if (budgets[i].name.toLowerCase() === category.toLowerCase()) {
                   setBudgetId(budgets[i]._id)
                   const remaining = budgets[i].remaining + Math.abs(parseFloat(amount)) 
                   console.log("a", remaining, budgets[i].remaining, amount)
-                  axios.put(`http://localhost:4000/budgets/editBudget/${userId}/${budgetId}`, {
+                  axios.put(`http://localhost:4000/budgets/editBudget/${user._id}/${budgetId}`, {
                     remaining: remaining,
                     amount: budgets[i].amount,
                     name: budgets[i].name,
                     recurring: budgets[i].recurring,
                     isFull: remaining <= budgets[i].amount ? true : false
-                  }).then((response) => console.log("DONE", response, remaining)).catch((err) => getError(err as ApiError))
+                  }).then((response) => console.log("DONE", response, remaining))
+                  .catch((err) => console.log(getError(err as ApiError)))
                 }
             }
             setDel(false)
-            const response = await axios.get(`http://localhost:4000/transactions/${userId}`)
+            const response = await axios.get(`http://localhost:4000/transactions/${user._id}`)
             setData(response.data)
         } catch(err) {
             console.log(getError(err as ApiError))
@@ -146,7 +149,7 @@ export default function Transactions() {
     const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault()
         try {
-            await axios.put(`http://localhost:4000/transactions/editTransaction/${userId}/${txId}`, {
+            await axios.put(`http://localhost:4000/transactions/editTransaction/${user._id}/${txId}`, {
                 name,
                 amount,
                 category,
@@ -155,7 +158,7 @@ export default function Transactions() {
                 txType
             });
             setEdit(false)
-            axios.get(`http://localhost:4000/transactions/${userId}`)
+            axios.get(`http://localhost:4000/transactions/${user._id}`)
                 .then((response) => { setData(response.data); }
             );
             toast.success("Transaction Edited Successfully")

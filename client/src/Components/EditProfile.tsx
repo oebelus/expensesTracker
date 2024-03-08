@@ -1,21 +1,25 @@
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import { useEffect, useState, ChangeEvent } from "react";
-import { User } from "../types/User";
+import { ChangeEvent, useReducer, useState } from "react";
 import { getError } from "../../utils";
 import { ApiError } from "../types/ApiError";
+import { initialState, reducer } from "../context";
+import { toast } from "react-toastify";
 
 export default function EditProfile() {
-    const [user, setUser] = useState<User>({})
+    const [state, ] = useReducer(reducer, initialState)
+    const user = state.user
 
-    const userId = localStorage.getItem("userId")
+    const [nameBtn, setnameBtn] = useState(false)
+    const [emailBtn, setEmailBtn] = useState(false)
+    const [passwordBtn, setPasswordBtn] = useState(false)
 
-    useEffect(() => {
-        axios.get(`http://localhost:4000/users/${userId}`)
-        .then((response) =>{setUser(response.data)})
-        .catch((err) => getError(err as ApiError))
-    }, [userId])
+    const [firstName, setFirstName] = useState("")
+    const [familyName, setFamilyName] = useState("")
+    const [email, setEmail] = useState("")
+    const [oldPassword, setOldPassword] = useState("")
+    const [newPassword, setNewPassword] = useState("")
 
     async function handleImage (e: ChangeEvent<HTMLInputElement>) {
         const selectedFile = e.target.files![0]; 
@@ -23,12 +27,38 @@ export default function EditProfile() {
         const formData = new FormData();
         formData.append("pfp", selectedFile); 
         try {
-            await axios.put(`http://localhost:4000/users/image/${userId}`, formData, {
+            await axios.put(`http://localhost:4000/users/image/${user._id}`, formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
             });
         } catch (err) {
             console.log(getError(err as ApiError));
         }
+    }
+
+    async function handleEmail(e: React.SyntheticEvent) {
+        e.preventDefault()
+        axios.put(`http://localhost:4000/users/email/${user._id}`, email)
+        .then(() => toast.success("Email Updated Successfully"))
+        .catch((err) => toast.error(getError(err as ApiError)))
+    }
+
+    async function handleName(e: React.SyntheticEvent) {
+        e.preventDefault()
+        console.log(user._id)
+        axios.put(`http://localhost:4000/users/name/${user._id}`, {
+            firstName: firstName,
+            familyName: familyName,
+        })
+            .then(() => toast.success("Name Updated Successfully"))
+            .catch((err) => toast.error(getError(err as ApiError)))
+        setnameBtn(!nameBtn)
+    }
+
+    async function handlePassword(e: React.SyntheticEvent) {
+        e.preventDefault()
+        axios.put(`http://localhost:4000/users/password/${user._id}`, newPassword)
+        .then(() => toast.success("Password Updated Successfully"))
+        .catch((err) => console.log(getError(err as ApiError)))
     }
 
     return (
@@ -50,23 +80,52 @@ export default function EditProfile() {
                 <div className="flex justify-between lg:w-[40%]">
                     <div>
                         <h3 className="font-bold">Name</h3>
-                        <p>{user!.firstName} {user!.familyName}</p>
+                        { !nameBtn ? 
+                            <div>
+                                <p>{user!.firstName} {user!.familyName}</p> 
+                                <button onClick={() => setnameBtn(!nameBtn)} className="bg-gray-900 p-1 pr-2 pl-2 rounded-lg mt-2">Change</button>
+                            </div>
+                            : 
+                            <div>
+                                <input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First Name" type="text" />
+                                <input value={familyName} onChange={(e) => setFamilyName(e.target.value)} placeholder="Family Name" type="text" />
+                                <button onClick={handleName} className="bg-gray-900 p-1 pr-2 pl-2 rounded-lg mt-2">Save</button>
+                            </div>
+                        }
                     </div>
-                    <button className="bg-gray-900 p-1 pr-2 pl-2 rounded-lg mt-2">Change</button>
                 </div>
                 <div className="flex justify-between lg:w-[40%]">
                     <div>
                         <h3 className="font-bold">Password</h3>
-                        <p>********</p>
+                        { !passwordBtn ? 
+                            <div>
+                                <p>********</p> 
+                                <button onClick={() => setPasswordBtn(!passwordBtn)} className="bg-gray-900 p-1 pr-2 pl-2 rounded-lg mt-2">Change</button>
+                            </div>
+                            : 
+                            <div>
+                                <input type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} placeholder="Your Old Password" />
+                                <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Your New Password" />
+                                <button onClick={handlePassword} className="bg-gray-900 p-1 pr-2 pl-2 rounded-lg mt-2">Save</button>
+                            </div>
+                        }
                     </div>
-                    <button className="bg-gray-900 p-1 pr-2 pl-2 rounded-lg mt-2">Change</button>
                 </div>
                 <div className="flex justify-between lg:w-[40%]">
                     <div>
                         <h3 className="font-bold">Email</h3>
-                        <p>{user!.email}</p>
+                        { emailBtn ? 
+                            <div className="flex justify-between lg:w-[40%]">
+                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                <button onClick={handleEmail} className="bg-gray-900 p-1 pr-2 pl-2 rounded-lg mt-2">Save</button>
+                            </div>
+                            : 
+                            <div>
+                                <p>{user!.email}</p> 
+                                <button onClick={() => setEmailBtn(!emailBtn)} className="bg-gray-900 p-1 pr-2 pl-2 rounded-lg mt-2">Change</button>
+                            </div>
+                        }
                     </div>
-                    <button className="bg-gray-900 p-1 pr-2 pl-2 rounded-lg mt-2">Change</button>
                 </div>
             </div>
         </div>

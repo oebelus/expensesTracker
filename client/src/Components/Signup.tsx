@@ -1,8 +1,9 @@
 import axios from "axios"
-import { useState } from "react"
+import { useReducer, useState } from "react"
 import { toast } from "react-toastify"
 import { getError } from "../../utils"
 import { ApiError } from "../types/ApiError"
+import { initialState, reducer } from "../context"
 
 export default function SignUp() {
     const [firstName, setFirstName] = useState("") 
@@ -10,6 +11,8 @@ export default function SignUp() {
     const [email, setEmail] = useState("") 
     const [password, setPassword] = useState("") 
     const [confirmPassword, setConfirmPassword] = useState("") 
+
+    const [, dispatch] = useReducer(reducer, initialState)
 
     const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault()
@@ -24,8 +27,8 @@ export default function SignUp() {
             password
         })
         .then(response => {
-            console.log(response.data)
             localStorage.setItem('userId', response.data._id)
+            localStorage.setItem('userInfo', JSON.stringify(response.data))
         })
         .catch(err => console.log(getError(err as ApiError)))
     }

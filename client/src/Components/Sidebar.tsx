@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useReducer, useState } from "react";
 import { Link } from "react-router-dom";
+import { initialState, reducer } from "../context";
 
 export default function Sidebar() {
     const [visible, setVisible] = useState(false)
-    const userId = localStorage.getItem('userId')
+    const [state, ] = useReducer(reducer, initialState)
+    const userId = state.user._id
 
     return (
         <div className="bg-gray-900">

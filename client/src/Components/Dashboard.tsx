@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import Card from "./dashboard/Card";
 import Plot from "./dashboard/chart/Plot";
 import axios from "axios";
 import { Transaction } from "../types/Transaction";
 import { MonthlyData } from "../types/MonthlyData";
-import TxHistory from "./dashboard/TxHistory";
-import { getError } from "../../utils";
-import { ApiError } from "../types/ApiError";                                                                                                                                 
+import TxHistory from "./dashboard/TxHistory";                                                                                                                             
 import UpcomingPayments from "./dashboard/UpcomingPayments";
 import TotalBalance from "./dashboard/TotalBalance";
+import { initialState, reducer } from "../context";
 
 export default function Dashboard() {
   const [monthlyData, setMonthlyData] = useState<MonthlyData>({
@@ -17,26 +16,16 @@ export default function Dashboard() {
     budget: new Array(12).fill(0),
   });
 
+  const [state, ] = useReducer(reducer, initialState)
+  const user = state.user
+
   const [history, setHistory] = useState<Transaction[]>([])
-  const [firstName, setFistName] = useState("")
-  const [familyName, setFamilyName] = useState("")
 
   const year = "2023"
-  const userId = localStorage.getItem("userId")
 
   useEffect(() => {
-    axios.get(`http://localhost:4000/users/${userId}`)
-      .then((response) => {
-        setFistName(response.data.firstName)
-        setFamilyName(response.data.familyName)
-      })
-      .catch((err) => getError(err as ApiError))
-  })
-
-  useEffect(() => {
-    const userId = localStorage.getItem('userId');
     let transactions: Transaction[] = []
-    axios.get(`http://localhost:4000/transactions/${userId}`)
+    axios.get(`http://localhost:4000/transactions/${user._id}`)
         .then(response => {
             transactions = response.data;
             const monthlyTotals = {
@@ -70,7 +59,7 @@ export default function Dashboard() {
             setMonthlyData(monthlyTotals);
         })
         .catch(error => console.log(error));
-  }, [year]);
+  }, [user._id, year]);
 
   const budget = monthlyData.budget.reduce((a, b) => {return a + b})
   const expense = monthlyData.expense.reduce((a, b) => {return a + b})
@@ -90,7 +79,7 @@ export default function Dashboard() {
   
   return (
     <section className="p-6 dark:bg-gray-900 dark:text-gray-50 overflow-y-hidden">
-      <h1 className="lg:text-2xl font-bold">Welcome to your Dashboard, {firstName}</h1>
+      <h1 className="lg:text-2xl font-bold">Welcome to your Dashboard, {user.firstName}</h1>
       <div id="dashboard" className="grid gap-4 lg:grid-cols-4 sm:col-span-3">
         <div className="mt-5 bg-gray-800 rounded-lg col-span-3 lg:col-span-3 flex-col">
             <Plot monthlyData={monthlyData} />
@@ -112,7 +101,7 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="rounded-lg p-4 bg-gray-800 col-span-3 sm:col-span-3 lg:col-span-1 md:col-span-3 flex-col">
-            <TotalBalance  budget={budget} firstName={firstName} familyName={familyName}/>
+            <TotalBalance  budget={budget} firstName={user.firstName} familyName={user.familyName}/>
             <div className="">
               <TxHistory history={history}/>
               <UpcomingPayments />

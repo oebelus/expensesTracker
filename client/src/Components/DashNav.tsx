@@ -1,26 +1,17 @@
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useReducer } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon } from '@heroicons/react/24/outline'
-import axios from 'axios'
-import { getError } from '../../utils'
-import { ApiError } from '../types/ApiError'
-import { User } from '../types/User'
+import { initialState, reducer } from '../context'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
 export default function DashNav() {
-  const [user, setUser] = useState<User>()
-  const userId = localStorage.getItem('userId')
   const currentPath = window.location.pathname
-  console.log("nav", user)
-  
-  useEffect(() => {
-    axios.get(`http://localhost:4000/users/${userId}`)
-      .then((response) => setUser(response.data))
-      .catch((err) => console.log(getError(err as ApiError)))
-  }, [userId])
+  const [state, ] = useReducer(reducer, initialState)
+  const user = state.user
+
   return (
     <Disclosure as="nav" className="bg-gray-900">
         <>
