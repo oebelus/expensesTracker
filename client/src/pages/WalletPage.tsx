@@ -17,7 +17,7 @@ export default function Tracker() {
           <Sidebar/>
           <div className="lg:col-span-4 w-full">
             <DashNav />
-            <section className="p-6 dark:bg-gray-800 dark:text-gray-50">
+            <section className="p-6 h-full dark:bg-gray-800 dark:text-gray-50">
               <div className="head">
                 <h1 className="text-3xl font-bold mb-4">My Wallet</h1>
                 <button className="p-6" onClick={toggleAddTransaction}><FontAwesomeIcon icon={faPlus}/> Add a Transaction</button>

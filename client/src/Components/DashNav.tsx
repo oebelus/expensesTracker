@@ -28,7 +28,7 @@ export default function DashNav() {
                 <div className="flex flex-shrink-0 items-center">
                     <a href={`${currentPath.replace(window.location.pathname, "dashboard")}`}>
                         <h1 
-                        className="text-2xl font-bold dark:border-transparent dark:text-violet-400 dark:border-violet-400"
+                        className="text-xl font-bold dark:border-transparent dark:text-violet-400 dark:border-violet-400"
                         style={{"cursor": "pointer"}}
                         >
                             Expense Tracker</h1>

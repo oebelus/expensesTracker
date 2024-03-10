@@ -1,8 +1,12 @@
+import { Budget } from "./types/Budget";
+import { Transaction } from "./types/Transaction";
 import { User } from "./types/User";
 
 type AppState = {
     user: User;
     currency: string;
+    transactions: Transaction[];
+    budgets: Budget[];
 }
 
 export const initialState: AppState = {
@@ -11,13 +15,21 @@ export const initialState: AppState = {
         : "null",
     currency: localStorage.getItem('currency')
         ? localStorage.getItem("currency")!
-        : "$"
+        : "$",
+    transactions: [],
+    budgets: []
 }
 
-type Action = 
+export type Action = 
     | { type: 'USER_SIGNIN'; payload: User }
     | { type: 'USER_SIGNOUT' }
     | { type: 'SET_CURRENCY', payload: string }
+    | { type: 'EDIT_NAME', payload: { firstName: string, familyName: string } }
+    | { type: 'EDIT_EMAIL', payload: string }
+    | { type: 'FETCH_TX', payload: Transaction[] }
+    | { type: 'ADD_TX', payload: Transaction }
+    | { type: 'DELETE_TX', payload: string }
+    | { type: 'UPDATE_TX', payload: Transaction }
 
 export function reducer(state: AppState, action: Action): AppState {
     switch (action.type) {
@@ -25,9 +37,33 @@ export function reducer(state: AppState, action: Action): AppState {
             return { ...state, user: action.payload };
         case 'USER_SIGNOUT': 
             return { ...state, currency: "$" }
+        case 'EDIT_NAME':
+            return { ...state, user: { ...state.user, firstName: action.payload.firstName, familyName: action.payload.familyName } };
+        case 'EDIT_EMAIL':
+            return { ...state, user: { ...state.user, email: action.payload } };
         case 'SET_CURRENCY':
             return { ...state, currency: action.payload }
+        case 'FETCH_TX':
+            return { ...state, transactions: action.payload }
+        case 'ADD_TX': 
+            return { 
+                ...state,
+                transactions: [...state.transactions, action.payload]    
+            }
+        case 'DELETE_TX': 
+            return { 
+                ...state, 
+                transactions: state.transactions.filter(tx => tx._id != action.payload) 
+            }
+        case 'UPDATE_TX':
+            return {
+                ...state, 
+                transactions: state.transactions.map(tx => 
+                    tx._id === action.payload._id ? action.payload : tx 
+                )
+            }
         default:
             return state
     }
 }
+

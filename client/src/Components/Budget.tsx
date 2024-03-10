@@ -210,7 +210,7 @@ export default function Budget() {
               <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">{budget.name} <button onClick={() => openEdit(budget)}><FontAwesomeIcon icon={faPen}/></button></h3>
               <div className="mb-2 flex justify-between items-center">
                 <span className="text-sm">${budget.remaining} of ${budget.amount}</span>
-                <span className="text-sm text-gray-800 dark:text-white">You used {(budget.remaining / budget.amount)*100}%</span>
+                <span className="text-sm text-gray-800 dark:text-white">You used {100-(budget.remaining / budget.amount)*100}%</span>
               </div>
               <div 
                 className="flex w-full h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700" 
@@ -219,7 +219,7 @@ export default function Budget() {
                 aria-valuemin={0} 
                 aria-valuemax={100}
               >
-                <div className="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap transition duration-500 dark:bg-blue-500" style={{"width": `${(budget.remaining / budget.amount)*100}%`}}></div>
+                <div className="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap transition duration-500 dark:bg-violet-500" style={{"width": `${100-(budget.remaining / budget.amount)*100}%`}}></div>
               </div>
             </div>
           )

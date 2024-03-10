@@ -4,7 +4,7 @@ import { Transaction } from "../../types/Transaction";
 export default function TxHistory({history}: {history: Transaction[]}) {
     return (
       <div>
-        <h1 className="text-xl font-bold">Recent Transactions</h1>
+        <h1 className="text-xl font-bold text-center mt-4">Recent Transactions</h1>
           {
             history.map((transaction, key) => ( new Date(transaction.date).getMonth() === new Date().getMonth() && 
               <div key={key} className="max-w-md p-2 sm:flex sm:space-x-2 dark:bg-gray-800 dark:text-gray-100">

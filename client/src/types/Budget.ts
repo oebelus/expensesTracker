@@ -1,4 +1,4 @@
-type Budget = {
+export type Budget = {
     _id: string,
     amount: number,
     name: string,

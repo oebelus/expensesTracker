@@ -9,9 +9,9 @@ import { day, format, getError } from "../../utils";
 import { ApiError } from "../types/ApiError";
 import { toast } from "react-toastify";
 import { initialState, reducer } from "../context";
+import { Budget } from "../types/Budget";
 
 export default function Transactions() {
-    const [data, setData] = useState<Transaction[]>([]);
     const [edit, setEdit] = useState<boolean>(false)
     const [del, setDel] = useState<boolean>(false)
 
@@ -22,6 +22,7 @@ export default function Transactions() {
     const [recurring, setRecurring] = useState<Transaction['recurring']>(false)
     const [txType, setTxType] = useState<Transaction['txType']>("expense")
     const [txId, setTxId] = useState("")
+    const [tx, setTx] = useState<Transaction>()
 
     const [budgets, setBudgets] = useState<Budget[]>([])
     const [budgetId, setBudgetId] = useState<Budget["_id"]>("")
@@ -42,19 +43,20 @@ export default function Transactions() {
 
     const [prompt, setPrompt] = useState<Transaction['name']>("")
     
-    const [state, ] = useReducer(reducer, initialState)
+    const [state, dispatch] = useReducer(reducer, initialState)
     const user = state.user
+    const transactions = state.transactions
 
     useEffect(() => {
         axios.get(`http://localhost:4000/transactions/${user._id}`)
             .then((response) => {
-                setData(response.data);
+                dispatch({type: 'FETCH_TX', payload: response.data})
             })
             .catch((err) => {console.log(err)})
 
-        let filteredTransactions: Transaction[] = data
+        let filteredTransactions: Transaction[] = transactions
         if (min && max) {
-            filteredTransactions = data.filter((transaction) => {
+            filteredTransactions = transactions.filter((transaction) => {
                 const minDate = new Date(min)
                 const maxDate = new Date(max)
                 const transactionDate = new Date((new Date(transaction.date)).toISOString().substr(0, 10))
@@ -73,7 +75,7 @@ export default function Transactions() {
             })
         }
         setFilteredData(filteredTransactions)
-    }, [data, min, max, filteredCategory, prompt, user._id]);
+    }, [min, max, filteredCategory, prompt, user._id, transactions]);
     
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,6 +90,7 @@ export default function Transactions() {
     }  
 
     const handleEdit = (selectedTransaction: Transaction) => {
+        setTx(selectedTransaction)
         setName(selectedTransaction.name);
         setAmount(selectedTransaction.amount);
         setCategory(selectedTransaction.category);
@@ -113,6 +116,7 @@ export default function Transactions() {
     const deleteTx = async () => {
         try {
             await axios.delete(`http://localhost:4000/transactions/deleteTransaction/${user._id}/${txId}`)
+            dispatch({type: "DELETE_TX", payload: txId})
             const length = budgets.length
             for (let i = 0; i < length; i++) {
                 if (budgets[i].name.toLowerCase() === category.toLowerCase()) {
@@ -130,8 +134,6 @@ export default function Transactions() {
                 }
             }
             setDel(false)
-            const response = await axios.get(`http://localhost:4000/transactions/${user._id}`)
-            setData(response.data)
         } catch(err) {
             console.log(getError(err as ApiError))
         }
@@ -158,9 +160,7 @@ export default function Transactions() {
                 txType
             });
             setEdit(false)
-            axios.get(`http://localhost:4000/transactions/${user._id}`)
-                .then((response) => { setData(response.data); }
-            );
+            dispatch({type: "UPDATE_TX", payload: tx!})
             toast.success("Transaction Edited Successfully")
         } catch (err) {
             console.log(getError(err as ApiError));
@@ -281,7 +281,7 @@ export default function Transactions() {
                         <select style={{"cursor": "pointer", "width": "60%"}} className="px-5 dark:bg-gray-800 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm dark:hover:bg-gray-800 dark:text-gray-300 hover:bg-gray-900">
                             <option value="category">Category</option>
                             {
-                                txArray(data).map((tx: string, key) => (
+                                txArray(transactions).map((tx: string, key) => (
                                     <option onClick={() => setFilteredCategory(tx)} key={key} value={tx}>{tx}</option>
                                 ))
                             }
@@ -297,7 +297,7 @@ export default function Transactions() {
                             <input name="end" value={max ? max.toISOString().substr(0, 10) : ""} onChange={(e) => setMax(new Date(e.target.value))} type="date" className="px-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-4 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date end"/>
                         </div>
                     </div>
-                    <div className="relative flex items-center mt-4 md:mt-0">
+                    <div className="relative flex items-center mt-4 md:mt-0 w-[50%]">
                         <span className="absolute">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-5 h-5 mx-3 text-gray-400 dark:text-gray-600">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -352,7 +352,7 @@ export default function Transactions() {
                                 </td>
                             </tr>
                         )) : 
-                        data.map((el: Transaction, key: number) => (
+                        transactions.map((el: Transaction, key: number) => (
                             <tr key={key} className="border-b border-opacity-20 dark:border-gray-700 dark:bg-gray-900">
                                 <td className="p-3" style={{ width: '20%' }}>
                                     <p className="text-center">{format(new Date(el.date))}</p>

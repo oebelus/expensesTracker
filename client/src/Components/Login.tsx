@@ -18,7 +18,7 @@ export default function Login() {
             password
         })
         .then(response => {
-            
+            dispatch({type: "USER_SIGNIN", payload: response.data})
             localStorage.setItem("userId", response.data._id)
             localStorage.setItem('userInfo', JSON.stringify(response.data))
         })
