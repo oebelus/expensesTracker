@@ -47,21 +47,19 @@ export default function Dashboard() {
 
     setHistory(transactionsHistory.splice(0, max))
 
-  }, [transactions])
+  }, [])
 
-  useEffect(() => {
-    transactions.forEach((transaction: Transaction) => {
-      const monthIndex = new Date(transaction.date).getMonth();
-      const transactionAmount = parseInt(transaction.amount)
-  
-      if (transactionAmount > 0) {
-        monthlyTotals.income[monthIndex] += parseInt(transaction.amount);
-      } else if (transactionAmount < 0) {
-        monthlyTotals.expense[monthIndex] += Math.abs(transactionAmount); 
-      } 
-      monthlyTotals.budget[monthIndex] = monthlyTotals.income[monthIndex] - monthlyTotals.expense[monthIndex]
-    });
-  })
+  transactions.forEach((transaction: Transaction) => {
+    const monthIndex = new Date(transaction.date).getMonth();
+    const transactionAmount = parseInt(transaction.amount)
+
+    if (transactionAmount > 0) {
+      monthlyTotals.income[monthIndex] += parseInt(transaction.amount);
+    } else if (transactionAmount < 0) {
+      monthlyTotals.expense[monthIndex] += Math.abs(transactionAmount); 
+    } 
+    monthlyTotals.budget[monthIndex] = monthlyTotals.income[monthIndex] - monthlyTotals.expense[monthIndex]
+  });
 
   const budget = monthlyTotals.budget.reduce((a, b) => {return a + b})
   const expense = monthlyTotals.expense.reduce((a, b) => {return a + b})

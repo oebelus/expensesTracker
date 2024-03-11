@@ -30,6 +30,10 @@ export type Action =
     | { type: 'ADD_TX', payload: Transaction }
     | { type: 'DELETE_TX', payload: string }
     | { type: 'UPDATE_TX', payload: Transaction }
+    | { type: 'FETCH_BUDGET', payload: Budget[] }
+    | { type: 'ADD_BUDGET', payload: Budget }
+    | { type: 'DELETE_BUDGET', payload: string }
+    | { type: 'UPDATE_BUDGET', payload: Budget }
 
 export function reducer(state: AppState, action: Action): AppState {
     switch (action.type) {
@@ -62,6 +66,25 @@ export function reducer(state: AppState, action: Action): AppState {
                     tx._id === action.payload._id ? action.payload : tx 
                 )
             }
+        case 'FETCH_BUDGET':
+            return { ...state, budgets: action.payload }
+        case 'ADD_BUDGET': 
+            return { 
+                ...state,
+                budgets: [...state.budgets, action.payload]    
+            }
+        case 'DELETE_BUDGET': 
+            return { 
+                ...state, 
+                budgets: state.budgets.filter(budget => budget._id != action.payload) 
+            }
+        case 'UPDATE_BUDGET': {
+            const budgets = state.budgets.filter(budget => budget._id != action.payload._id)
+            return {
+                ...state, 
+                budgets: [...budgets, action.payload]
+            }
+        }
         default:
             return state
     }

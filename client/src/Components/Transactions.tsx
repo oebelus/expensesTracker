@@ -24,7 +24,6 @@ export default function Transactions() {
     const [txId, setTxId] = useState("")
     const [tx, setTx] = useState<Transaction>()
 
-    const [budgets, setBudgets] = useState<Budget[]>([])
     const [budgetId, setBudgetId] = useState<Budget["_id"]>("")
 
     const recurringDictionary: Record<string, IconDefinition> = {
@@ -46,6 +45,7 @@ export default function Transactions() {
     const [state, dispatch] = useReducer(reducer, initialState)
     const user = state.user
     const transactions = state.transactions
+    const budgets = state.budgets
 
     useEffect(() => {
         axios.get(`http://localhost:4000/transactions/${user._id}`)
@@ -102,7 +102,9 @@ export default function Transactions() {
 
     useEffect(() => {
         axios.get(`http://localhost:4000/budgets/${user._id}`).then(
-          (response) => {setBudgets(response.data)}
+          (response) => {
+            dispatch({type:'FETCH_BUDGET', payload: response.data})
+        }
         )
       }, [budgets, user])
 
@@ -129,7 +131,11 @@ export default function Transactions() {
                     name: budgets[i].name,
                     recurring: budgets[i].recurring,
                     isFull: remaining <= budgets[i].amount ? true : false
-                  }).then((response) => console.log("DONE", response, remaining))
+                  })
+                  .then(() =>{
+                    dispatch({type: 'UPDATE_BUDGET', payload: budgets.find(budget => budget._id === budgetId)!})
+                    toast.success('Budget Updated Successfully!')
+                  })
                   .catch((err) => console.log(getError(err as ApiError)))
                 }
             }

@@ -1,8 +1,10 @@
 import axios from "axios"
-import { useEffect, useState } from "react"
+import { useEffect, useReducer, useState } from "react"
 import { getError } from "../../utils"
 import { ApiError } from "../types/ApiError"
 import { Transaction } from "../types/Transaction"
+import { initialState, reducer } from "../context"
+import { toast } from "react-toastify"
 
 export default function Wallet() {
   const [name, setName] = useState<Transaction['name']>("")
@@ -12,20 +14,23 @@ export default function Wallet() {
   const [recurring, setRecurring] = useState<Transaction['recurring']>(false)
   const [txType, setTxType] = useState<Transaction['txType']>("")
   const [budgetId, setBudgetId] = useState("")
-  const [budgets, setBudgets] = useState<Budget[]>([])
-
-  const userId = localStorage.getItem("userId")
 
   const dictionary: Record<string, boolean> = {
     "yes": true,
     "no": false
   }
 
+  const [state, dispatch] = useReducer(reducer, initialState)
+  const user = state.user
+  const budgets = state.budgets
+
   useEffect(() => {
-    axios.get(`http://localhost:4000/budgets/${userId}`).then(
-      (response) => {setBudgets(response.data)}
+    axios.get(`http://localhost:4000/budgets/${user._id}`).then(
+      (response) => {
+        dispatch({type: 'FETCH_BUDGET', payload: response.data})
+      }
     )
-  }, [budgets, userId])
+  }, [user._id])
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedDate = e.target.value
@@ -41,16 +46,21 @@ export default function Wallet() {
       if (budgets[i].name.toLowerCase() === category.toLowerCase()) {
         setBudgetId(budgets[i]._id)
         const remaining = budgets[i].remaining - parseFloat(amount) 
-        axios.put(`http://localhost:4000/budgets/editBudget/${userId}/${budgetId}`, {
+        axios.put(`http://localhost:4000/budgets/editBudget/${user._id}/${budgetId}`, {
           remaining: remaining,
           amount: budgets[i].amount,
           name: budgets[i].name,
           recurring: budgets[i].recurring,
           isFull: remaining <= budgets[i].amount ? true : false
-        }).then((response) => console.log("DONE", response, remaining)).catch((err) => getError(err as ApiError))
+        })
+        .then(() => {
+          dispatch({type: 'UPDATE_BUDGET', payload: budgets[i]})
+          toast.success(`Budget: "${budgets[i].name}" Updated Successfully`)
+        })
+        .catch((err) => getError(err as ApiError))
       }
     }
-    await axios.post(`http://localhost:4000/transactions/AddTransaction/${userId}`, {
+    await axios.post(`http://localhost:4000/transactions/AddTransaction/${user._id}`, {
       name,
       amount: txType === "expense" ? `-${amount}` : `+${amount}`,
       category,
@@ -58,7 +68,9 @@ export default function Wallet() {
       recurring,
       txType
     })
-    .then((response) => {console.log(userId); console.log("response", response, response.data.userId)})
+    .then((response) => {
+      dispatch({type: 'ADD_TX', payload: response.data})
+    })
     .catch((err) => console.log(getError(err as ApiError)))
   }
 

@@ -1,4 +1,4 @@
-import Budget from "../Components/Budget";
+import Budgeting from "../Components/Budgeting";
 import DashNav from "../Components/DashNav";
 import Sidebar from "../Components/Sidebar";
 
@@ -8,7 +8,7 @@ export default function BudgetingPage() {
         <Sidebar/>
         <div className="lg:col-span-4 w-full">
             <DashNav />
-            <Budget/>
+            <Budgeting/>
         </div>
     </div>
   )

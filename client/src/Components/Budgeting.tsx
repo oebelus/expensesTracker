@@ -1,13 +1,15 @@
 import { faArrowRight, faBasketball, faBurger, faBus, faGamepad, faHouse, faPen, faPlus, faShoppingBag } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import axios from "axios"
-import { useEffect, useState } from "react"
+import { useEffect, useReducer, useState } from "react"
 import { ApiError } from "../types/ApiError"
 import { getError } from "../../utils"
 import { Modal } from "@mui/material"
 import { toast } from "react-toastify"
+import { Budget } from "../types/Budget"
+import { initialState, reducer } from "../context"
 
-export default function Budget() {
+export default function Budgeting() {
   const [add, setAdd] = useState<boolean>(false)
   const [edit, setEdit] = useState<boolean>(false)
 
@@ -16,33 +18,36 @@ export default function Budget() {
   const [remaining, setRemaining] = useState<Budget["remaining"]>()
   const [recurring, setRecurring] = useState<Budget["recurring"]>(false)
   const [budgetId, setBudgetId] = useState<Budget["_id"]>("")
-  const [data, setData] = useState<Budget[]>([])
+  const [budget, setBudget] = useState<Budget>()
 
   const dictionary: Record<string, boolean> = {
     "true": true,
     "false": false,
   }
 
-  const userId = localStorage.getItem("userId")
+  const [state, dispatch] = useReducer(reducer, initialState)
+  const user = state.user
+  const budgets = state.budgets
 
   useEffect(() => {
-    axios.get(`http://localhost:4000/budgets/${userId}`)
+    axios.get(`http://localhost:4000/budgets/${user._id}`)
     .then((response) => {
-      setData(response.data)
+      dispatch({type: 'FETCH_BUDGET', payload: response.data})
     })
     .catch((err) => getError(err as ApiError))
-  }, [data, userId])
+  }, [user._id, budgets])
 
   const handleSubmit = (e:React.SyntheticEvent) => {
     e.preventDefault();
-    axios.post(`http://localhost:4000/budgets/addBudget/${userId}`, {
+    axios.post(`http://localhost:4000/budgets/addBudget/${user._id}`, {
       amount,
       name,
       remaining,
       isFull: remaining! > amount! ? true : false,
       recurring: recurring,
-    }).then(() => {
+    }).then((response) => {
       toast.success("Budget Added Successfully!")
+      dispatch({type: 'ADD_BUDGET', payload: response.data})
       setAdd(false)
     })
     .catch((err) => toast.error(getError(err as ApiError)))
@@ -72,24 +77,31 @@ export default function Budget() {
     setRemaining(selectedBudget.remaining)
     setBudgetId(selectedBudget._id)
     setRecurring(selectedBudget.recurring)
+    setBudget(selectedBudget)
   }
 
   const handleEdit = (e: React.SyntheticEvent) => {
     e.preventDefault()
-    axios.put(`http://localhost:4000/budgets/editBudget/${userId}/${budgetId}`, {
+    axios.put(`http://localhost:4000/budgets/editBudget/${user._id}/${budgetId}`, {
           remaining: remaining,
           amount: amount,
           name: name,
           recurring: recurring,
           isFull: remaining! <= amount! ? true : false
-    }).then(() => toast.success("Budget Edited Successfully")).catch((err) => toast.error(getError(err as ApiError)))
+    })
+    .then(() => {
+       toast.success("Budget Edited Successfully")
+       dispatch({type: 'UPDATE_BUDGET', payload: budget!})
+    })
+    .catch((err) => toast.error(getError(err as ApiError)))
     setEdit(false)
   }
 
   const handleDelete = () => {
-    axios.delete(`http://localhost:4000/budgets/deleteBudget/${userId}/${budgetId}`)
+    axios.delete(`http://localhost:4000/budgets/deleteBudget/${user._id}/${budgetId}`)
     .then(() => {
       toast("Budget Deleted Successfully!")
+      dispatch({type: 'DELETE_BUDGET', payload: budgetId!})
       setEdit(false)
     })
     .catch((err) => getError(err as ApiError));
@@ -204,7 +216,7 @@ export default function Budget() {
         </form>  
       </Modal>
       {
-        data.length > 0 && data.map((budget, key) => {
+        budgets.length > 0 && budgets.map((budget, key) => {
           return (
             <div key={key} className="lg:w-[65%] p-4">
               <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">{budget.name} <button onClick={() => openEdit(budget)}><FontAwesomeIcon icon={faPen}/></button></h3>
@@ -215,7 +227,7 @@ export default function Budget() {
               <div 
                 className="flex w-full h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700" 
                 role="progressbar" 
-                aria-valuenow={(budget.remaining / budget.amount)*100} 
+                aria-valuenow={(budget.remaining / budget.amount)*100 > 100 ? 100 : (budget.remaining / budget.amount)*100 > 100} 
                 aria-valuemin={0} 
                 aria-valuemax={100}
               >
