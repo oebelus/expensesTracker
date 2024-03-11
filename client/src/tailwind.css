@@ -870,12 +870,28 @@ select {
   right: 0px;
 }
 
+.right-4 {
+  right: 1rem;
+}
+
 .top-0 {
   top: 0px;
 }
 
 .top-3 {
   top: 0.75rem;
+}
+
+.top-4 {
+  top: 1rem;
+}
+
+.top-2 {
+  top: 0.5rem;
+}
+
+.right-2 {
+  right: 0.5rem;
 }
 
 .z-10 {
@@ -896,10 +912,6 @@ select {
 
 .z-50 {
   z-index: 50;
-}
-
-.col-span-2 {
-  grid-column: span 2 / span 2;
 }
 
 .col-span-full {
@@ -1185,6 +1197,10 @@ select {
 
 .w-\[100px\] {
   width: 100px;
+}
+
+.w-\[20\%\] {
+  width: 20%;
 }
 
 .w-\[50\%\] {
@@ -2333,14 +2349,6 @@ select {
     height: 20rem;
   }
 
-  .sm\:h-\[100px\] {
-    height: 100px;
-  }
-
-  .sm\:h-\[200px\] {
-    height: 200px;
-  }
-
   .sm\:h-\[300px\] {
     height: 300px;
   }
@@ -2474,10 +2482,6 @@ select {
     height: 300px;
   }
 
-  .md\:h-\[400px\] {
-    height: 400px;
-  }
-
   .md\:w-1\/3 {
     width: 33.333333%;
   }
@@ -2573,14 +2577,6 @@ select {
     margin-top: 0px;
   }
 
-  .lg\:ml-\[10\%\] {
-    margin-left: 10%;
-  }
-
-  .lg\:ml-\[15\%\] {
-    margin-left: 15%;
-  }
-
   .lg\:block {
     display: block;
   }
@@ -2663,10 +2659,6 @@ select {
 
   .lg\:justify-between {
     justify-content: space-between;
-  }
-
-  .lg\:gap-4 {
-    gap: 1rem;
   }
 
   .lg\:gap-8 {

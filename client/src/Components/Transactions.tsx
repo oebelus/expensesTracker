@@ -124,7 +124,7 @@ export default function Transactions() {
                 if (budgets[i].name.toLowerCase() === category.toLowerCase()) {
                   setBudgetId(budgets[i]._id)
                   const remaining = budgets[i].remaining + Math.abs(parseFloat(amount)) 
-                  console.log("a", remaining, budgets[i].remaining, amount)
+                  
                   axios.put(`http://localhost:4000/budgets/editBudget/${user._id}/${budgetId}`, {
                     remaining: remaining,
                     amount: budgets[i].amount,

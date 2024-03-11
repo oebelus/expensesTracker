@@ -2,68 +2,67 @@ import { useEffect, useReducer, useState } from "react";
 import Card from "./dashboard/Card";
 import Plot from "./dashboard/chart/Plot";
 import axios from "axios";
-import { Transaction } from "../types/Transaction";
 import TxHistory from "./dashboard/TxHistory";                                                                                                                             
 import UpcomingPayments from "./dashboard/UpcomingPayments";
 import { initialState, reducer } from "../context";
-import { getError } from "../../utils";
-import { ApiError } from "../types/ApiError";
 import { MonthlyData } from "../types/MonthlyData";
 
 export default function Dashboard() {
   const [state, dispatch] = useReducer(reducer, initialState)
-  const user = state.user
-  const transactions = state.transactions
-
-  const monthlyTotals: MonthlyData = {
+  const [monthlyTotals, setMonthlyTotals] = useState<MonthlyData>({
     income: new Array(12).fill(0),
     expense: new Array(12).fill(0),
     budget: new Array(12).fill(0),
-  };
+  })
+  const [year, setYear] = useState<number>(new Date().getFullYear())
+  const [years, setYears] = useState<number[]>([])
+  const last = new Date().getFullYear()
 
-  const [history, setHistory] = useState<Transaction[]>([])
+  const [clickedYear, setClickedYear] = useState<number>(new Date().getFullYear())
 
-  const year = "2023"
+  const user = state.user
+  const transactions = state.transactions
 
   useEffect(() => {
     axios.get(`http://localhost:4000/transactions/${user._id}`)
-    .then(response => {
-            dispatch({type: 'FETCH_TX', payload: response.data})
-        })
-    .catch((error) => console.log(getError(error as ApiError)))
-  }, [user._id])
+      .then((response) => {
+          dispatch({type: 'FETCH_TX', payload: response.data})
+          setYear(new Date(response.data[0].date).getFullYear())
+          setYears(Array.from({length: last- year + 1}, (_, index) => year + index))
+          console.log("CLICKED", clickedYear)
+      })
+      .catch((err) => {console.log(err)})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user._id, clickedYear]);
 
   useEffect(() => {
-    transactions.filter((transaction: Transaction) => {
-      return new Date(transaction.date).getFullYear() === new Date(year).getFullYear() 
+    const monthlyTotalsCopy = {
+      income: new Array(12).fill(0),
+      expense: new Array(12).fill(0),
+      budget: new Array(12).fill(0),
+    };
+
+    const filterByYear = transactions.filter((transaction) => {
+      const transactionYear = new Date(transaction.date).getFullYear() as number
+      return transactionYear === clickedYear
     })
+    console.log(filterByYear)
+    filterByYear.forEach((transaction) => {
+      const monthIndex = new Date(transaction.date).getMonth()
+      const transactionAmount = parseInt(transaction.amount)
 
-    const transactionsHistory = transactions.sort((a, b) =>
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    )
+      if (transactionAmount > 0) 
+        monthlyTotalsCopy.income[monthIndex] += transactionAmount
+      else if (transactionAmount < 0)
+        monthlyTotalsCopy.expense[monthIndex] += Math.abs(transactionAmount)
+      monthlyTotalsCopy.budget[monthIndex] = monthlyTotalsCopy.income[monthIndex] - monthlyTotalsCopy.expense[monthIndex]
+    })
+    setMonthlyTotals(monthlyTotalsCopy)
+  }, [clickedYear, transactions])
 
-    const length = transactionsHistory.length
-    const max = length < 4 ? length : 4
-
-    setHistory(transactionsHistory.splice(0, max))
-
-  }, [])
-
-  transactions.forEach((transaction: Transaction) => {
-    const monthIndex = new Date(transaction.date).getMonth();
-    const transactionAmount = parseInt(transaction.amount)
-
-    if (transactionAmount > 0) {
-      monthlyTotals.income[monthIndex] += parseInt(transaction.amount);
-    } else if (transactionAmount < 0) {
-      monthlyTotals.expense[monthIndex] += Math.abs(transactionAmount); 
-    } 
-    monthlyTotals.budget[monthIndex] = monthlyTotals.income[monthIndex] - monthlyTotals.expense[monthIndex]
-  });
-
-  const budget = monthlyTotals.budget.reduce((a, b) => {return a + b})
-  const expense = monthlyTotals.expense.reduce((a, b) => {return a + b})
-  const income: number = monthlyTotals.income.reduce((a, b) => {return a + b})
+  const budget = monthlyTotals.budget.reduce((a, b) => a + b);
+  const expense = monthlyTotals.expense.reduce((a, b) => a + b);
+  const income = monthlyTotals.income.reduce((a, b) => a + b);
 
   const total = budget + expense + income
 
@@ -97,11 +96,22 @@ export default function Dashboard() {
         })}
       </div>
       <div id="dashboard" className="grid gap-4 lg:grid-cols-4 sm:col-span-3">
-        <div className="items-center bg-gray-800 rounded-lg sm:col-span-1 lg:col-span-2 md:col-span-2 flex-col">
-            <Plot monthlyData={monthlyTotals} />
+        <div className="w-auto flex flex-col relative items-center bg-gray-800 rounded-lg sm:col-span-1 lg:col-span-2 md:col-span-2">
+          <div className='w-[20%] absolute top-2 right-2'>
+            <select onChange={(e) => setClickedYear(parseInt(e.target.value))} id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                {
+                  years.map((year, key) => {
+                    return (
+                      <option key={key} value={`${year}`}>{year}</option>
+                    )
+                  })
+                }
+            </select>
+          </div>
+          <Plot monthlyData={monthlyTotals} />
         </div>
         <div className="rid flex justify-center lg:gap-8 md:gap-10 sm:gap-16 sm:flex-row md:flex-row lg:flex-row rounded-lg p-4 bg-gray-800 sm:col-span-2 lg:col-span-2 md:col-span-2 flex-col">    
-          <TxHistory history={history}/>
+          <TxHistory/>
           <UpcomingPayments />
         </div>
       </div>
