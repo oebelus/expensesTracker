@@ -19,3 +19,8 @@ export function day(date: Date): string {
     const days: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     return days[date.getDay()];
 } 
+
+export const dictionary: Record<string, boolean> = {
+    "true": true,
+    "false": false,
+}

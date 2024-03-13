@@ -5,6 +5,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import Transactions from "../Components/Transactions";
+import { Helmet } from "react-helmet-async";
 
 export default function Tracker() {
   const [showAddTransaction, setShowAddTransaction] = useState(false);
@@ -14,6 +15,9 @@ export default function Tracker() {
   };
   return (
         <div className="grid lg:grid-cols-5">
+          <Helmet>
+            <title>Transactions</title>
+          </Helmet>
           <Sidebar/>
           <div className="lg:col-span-4 w-full">
             <DashNav />
@@ -22,8 +26,8 @@ export default function Tracker() {
                 <h1 className="text-3xl font-bold mb-4">My Wallet</h1>
                 <button className="p-6" onClick={toggleAddTransaction}><FontAwesomeIcon icon={faPlus}/> Add a Transaction</button>
                 {showAddTransaction && <AddTransaction />}
-                </div>
-                <Transactions/>
+              </div>
+              <Transactions/>
             </section>
           </div>
         </div>

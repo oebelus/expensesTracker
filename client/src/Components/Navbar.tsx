@@ -1,7 +1,10 @@
 import { Link } from "react-scroll";
 import { Link as RouterLink } from "react-router-dom"
+import { useState } from "react";
 
 export default function Navbar() {
+    const [url, setUrl] = useState('hero');
+
     return (
         <header className="p-4 dark:bg-gray-800 dark:text-gray-100 sticky top-0 z-50">
 	<div className="container flex justify-between h-16 mx-auto">
@@ -19,8 +22,9 @@ export default function Navbar() {
                     to="hero" 
                     smooth 
                     duration={500} 
-                    className="flex items-center px-4 -mb-1 border-b-2 dark:border-transparent dark:text-violet-400 dark:border-violet-400"
+                    className={`${url === 'hero' ? "dark:text-violet-400 dark:border-violet-400" : ""} flex items-center px-4 -mb-1 border-b-2 dark:border-transparent`}
                     style={{ cursor: 'pointer' }}
+                    onClick={() => setUrl('hero')}
                     >
                         Home
                 </Link>
@@ -31,8 +35,9 @@ export default function Navbar() {
                     to="features" 
                     smooth 
                     duration={500} 
-                    className="flex items-center px-4 -mb-1 border-b-2 dark:border-transparent"
+                    className={`${url === 'features' ? "dark:text-violet-400 dark:border-violet-400" : ""} flex items-center px-4 -mb-1 border-b-2 dark:border-transparent`}
                     style={{ cursor: 'pointer' }}
+                    onClick={() => setUrl('features')}
                     >
                         Features
                 </Link>
@@ -43,8 +48,9 @@ export default function Navbar() {
                     to="steps" 
                     smooth
                     duration={500}
-                    className="flex items-center px-4 -mb-1 border-b-2 dark:border-transparent"
+                    className={`${url === 'steps' ? "dark:text-violet-400 dark:border-violet-400" : ""} flex items-center px-4 -mb-1 border-b-2 dark:border-transparent`}
                     style={{ cursor: 'pointer' }}
+                    onClick={() => setUrl('steps')}
                 >
                     Steps
                 </Link>

@@ -2,12 +2,14 @@ import { faArrowRight, faCar, faHouse, faLaptop, faPen, faPills, faPlane, faPlus
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Modal } from "@mui/material"
 import axios from "axios"
-import { useEffect, useState } from "react"
+import { useEffect, useReducer, useState } from "react"
 import { getError } from "../../utils"
 import { ApiError } from "../types/ApiError"
 import { toast } from "react-toastify"
+import { Budget } from "../types/Budget"
+import { initialState, reducer } from "../context"
 
-export default function Budget() {
+export default function Budgets() {
   const suggested = [
     { name: "Travel", icon: faPlane },
     { name: "Health", icon: faPills },
@@ -38,7 +40,8 @@ export default function Budget() {
     "false": false,
   }
 
-  const userId = localStorage.getItem("userId")
+  const [state, ] = useReducer(reducer, initialState)
+  const userId = state.user._id
 
   useEffect(() => {
     axios.get(`http://localhost:4000/savings/${userId}`)
@@ -217,7 +220,7 @@ export default function Budget() {
             <div key={key} className="lg:w-[65%] p-4">
               <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">{saving.name} <button onClick={() => openEdit(saving)}><FontAwesomeIcon icon={faPen}/></button></h3>
               <div className="mb-2 flex justify-between items-center">
-                <span className="text-sm">You have saved ${saving.remaining} towards your goal of ${saving.amount}</span>
+                <span className="text-sm">You have saved {saving.remaining} {state.currency} towards your goal of {saving.amount} {state.currency}</span>
                 <span className="text-sm text-gray-800 dark:text-white">{(saving.remaining / saving.amount)*100}%</span>
               </div>
               <div 

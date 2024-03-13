@@ -344,7 +344,7 @@ export default function Transactions() {
                                     <p className="text-center">{el.name}</p>
                                 </td>
                                 <td className="p-3" style={{ width: '20%' }}>
-                                    <p className="text-center">{parseFloat(el.amount) > 0 ? `+${el.amount}` : el.amount}$</p>
+                                    <p className="text-center">{parseFloat(el.amount) > 0 ? `+${el.amount}` : el.amount} {state.currency}</p>
                                 </td>
                                 <td className="p-3" style={{ width: '20%' }}>
                                     <p className="text-center">{el.category}</p>

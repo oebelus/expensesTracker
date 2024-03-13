@@ -9,8 +9,16 @@ function classNames(...classes: string[]) {
 
 export default function DashNav() {
   const currentPath = window.location.pathname
-  const [state, ] = useReducer(reducer, initialState)
+  const [state, dispatch] = useReducer(reducer, initialState)
   const user = state.user
+
+  function handleSignout() {
+    dispatch({type: 'USER_SIGNOUT'})
+    localStorage.removeItem('userId')
+    localStorage.removeItem('userInfo')
+    localStorage.removeItem('currency')
+    window.location.href = '/';
+  }
 
   return (
     <Disclosure as="nav" className="bg-gray-900">
@@ -85,16 +93,7 @@ export default function DashNav() {
                           <a
                             href="#"
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                          >
-                            Settings
-                          </a>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            onClick={handleSignout}
                           >
                             Sign out
                           </a>

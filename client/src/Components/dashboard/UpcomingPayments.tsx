@@ -22,7 +22,7 @@ export default function UpcomingPayments() {
   })
 
   return (
-    <div>
+    <div className="dark:bg-gray-800 dark:text-gray-100 rounded-lg p-6">
         <h1 className="text-xl font-bold text-center mt-4">Upcoming Payments</h1>
         {
             upcoming.map((transaction, key) => ( new Date(transaction.date).getMonth() === new Date().getMonth() && 
@@ -38,7 +38,7 @@ export default function UpcomingPayments() {
                           <span className="text-sm dark:text-gray-400">{format(new Date(currentDate))}</span>
                         );
                       })()}
-                      <span className="text-sm dark:text-gray-400">{transaction.amount}$</span>
+                      <span className="text-sm dark:text-gray-400">{transaction.amount} {state.currency}</span>
                     </div>
                   </div>
                 </div>

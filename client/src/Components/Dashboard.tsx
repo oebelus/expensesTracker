@@ -6,6 +6,11 @@ import TxHistory from "./dashboard/TxHistory";
 import UpcomingPayments from "./dashboard/UpcomingPayments";
 import { initialState, reducer } from "../context";
 import { MonthlyData } from "../types/MonthlyData";
+import { PieChart } from "./dashboard/PieChart";
+import SavingPlans from "./dashboard/SavingPlans";
+import { Transaction } from "../types/Transaction";
+import Years from "./dashboard/Years";
+import Months from "./dashboard/Months";
 
 export default function Dashboard() {
   const [state, dispatch] = useReducer(reducer, initialState)
@@ -14,11 +19,16 @@ export default function Dashboard() {
     expense: new Array(12).fill(0),
     budget: new Array(12).fill(0),
   })
+  
   const [year, setYear] = useState<number>(new Date().getFullYear())
   const [years, setYears] = useState<number[]>([])
   const last = new Date().getFullYear()
 
   const [clickedYear, setClickedYear] = useState<number>(new Date().getFullYear())
+
+  const [month, setMonth] = useState<number>(2)
+  const [monthly, setMonthly] = useState<Transaction[]>([])
+  const [yearly, setYearly] = useState<Transaction[]>([])
 
   const user = state.user
   const transactions = state.transactions
@@ -27,9 +37,9 @@ export default function Dashboard() {
     axios.get(`http://localhost:4000/transactions/${user._id}`)
       .then((response) => {
           dispatch({type: 'FETCH_TX', payload: response.data})
+          
           setYear(new Date(response.data[0].date).getFullYear())
           setYears(Array.from({length: last- year + 1}, (_, index) => year + index))
-          console.log("CLICKED", clickedYear)
       })
       .catch((err) => {console.log(err)})
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -46,7 +56,7 @@ export default function Dashboard() {
       const transactionYear = new Date(transaction.date).getFullYear() as number
       return transactionYear === clickedYear
     })
-    console.log(filterByYear)
+    setYearly(filterByYear)
     filterByYear.forEach((transaction) => {
       const monthIndex = new Date(transaction.date).getMonth()
       const transactionAmount = parseInt(transaction.amount)
@@ -59,6 +69,14 @@ export default function Dashboard() {
     })
     setMonthlyTotals(monthlyTotalsCopy)
   }, [clickedYear, transactions])
+
+  useEffect(() => {
+    const filterByMonth = yearly.filter((transaction) => {
+      const transactionMonth = new Date(transaction.date).getMonth() as number
+      return transactionMonth === month
+    })
+    setMonthly(filterByMonth)
+  }, [month, yearly])
 
   const budget = monthlyTotals.budget.reduce((a, b) => a + b);
   const expense = monthlyTotals.expense.reduce((a, b) => a + b);
@@ -97,22 +115,25 @@ export default function Dashboard() {
       </div>
       <div id="dashboard" className="grid gap-4 lg:grid-cols-4 sm:col-span-3">
         <div className="w-auto flex flex-col relative items-center bg-gray-800 rounded-lg sm:col-span-1 lg:col-span-2 md:col-span-2">
-          <div className='w-[20%] absolute top-2 right-2'>
-            <select onChange={(e) => setClickedYear(parseInt(e.target.value))} id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                {
-                  years.map((year, key) => {
-                    return (
-                      <option key={key} value={`${year}`}>{year}</option>
-                    )
-                  })
-                }
-            </select>
+          <div className='lg:w-[20%] md:w-[10%] sm:w-[5%] absolute top-2 right-2'>
+            <Years years={years} setClickedYear={setClickedYear}/>
           </div>
           <Plot monthlyData={monthlyTotals} />
         </div>
-        <div className="rid flex justify-center lg:gap-8 md:gap-10 sm:gap-16 sm:flex-row md:flex-row lg:flex-row rounded-lg p-4 bg-gray-800 sm:col-span-2 lg:col-span-2 md:col-span-2 flex-col">    
+        <div className="w-auto flex flex-col relative items-center bg-gray-800 rounded-lg sm:col-span-1 lg:col-span-2 md:col-span-2">    
+          <div className='lg:w-[20%] md:w-[10%] sm:w-[5%] absolute top-2 right-2'>
+            <Months setMonth={setMonth}/>
+          </div>
+          <PieChart transactions={monthly} />
+        </div>
+      </div>
+      <div className="lg:grid lg:grid-cols-4 mt-4">
+        <div className="flex col-span-2 gap-6 p-2 justify-center">
           <TxHistory/>
           <UpcomingPayments />
+        </div>
+        <div className="p-2 col-span-2">
+         <SavingPlans/>
         </div>
       </div>
     </section>

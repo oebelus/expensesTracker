@@ -16,6 +16,7 @@ import WalletPage from './pages/WalletPage.tsx'
 import BudgetingPage from './pages/BudgetingPage.tsx'
 import SavingPage from './pages/SavingPage.tsx'
 import Profile from './pages/Profile.tsx'
+import ProtectedRoute from './Components/ProtectedRoute.tsx'
 
 const userId = localStorage.getItem('userId')
 
@@ -25,11 +26,13 @@ const router = createBrowserRouter(
       <Route index={true} element={<HomePage/>}></Route>
       <Route path='Login' element={<LoginPage/>}></Route>
       <Route path='Signup' element={<SignupPage/>}></Route>
-      <Route path={`${userId}/dashboard`} element={<Tracker/>}></Route>
-      <Route path={`${userId}/wallet`} element={<WalletPage/>}></Route>
-      <Route path={`${userId}/budgeting`} element={<BudgetingPage/>}></Route>
-      <Route path={`${userId}/saving`} element={<SavingPage/>}></Route>
-      <Route path={`${userId}/profile`} element={<Profile/>}></Route>
+      <Route path='' element={<ProtectedRoute/>}>
+        <Route path={`${userId}/dashboard`} element={<Tracker/>}></Route>
+        <Route path={`${userId}/wallet`} element={<WalletPage/>}></Route>
+        <Route path={`${userId}/budgeting`} element={<BudgetingPage/>}></Route>
+        <Route path={`${userId}/saving`} element={<SavingPage/>}></Route>
+        <Route path={`${userId}/profile`} element={<Profile/>}></Route>
+      </Route>
     </Route>
   )
 )

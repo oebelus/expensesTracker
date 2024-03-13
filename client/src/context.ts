@@ -7,6 +7,7 @@ type AppState = {
     currency: string;
     transactions: Transaction[];
     budgets: Budget[];
+    savings: Budget[];
 }
 
 export const initialState: AppState = {
@@ -17,7 +18,8 @@ export const initialState: AppState = {
         ? localStorage.getItem("currency")!
         : "$",
     transactions: [],
-    budgets: []
+    budgets: [],
+    savings: [],
 }
 
 export type Action = 
@@ -34,6 +36,10 @@ export type Action =
     | { type: 'ADD_BUDGET', payload: Budget }
     | { type: 'DELETE_BUDGET', payload: string }
     | { type: 'UPDATE_BUDGET', payload: Budget }
+    | { type: 'FETCH_SAVING', payload: Budget[] }
+    | { type: 'ADD_SAVING', payload: Budget }
+    | { type: 'DELETE_SAVING', payload: string }
+    | { type: 'UPDATE_SAVING', payload: Budget }
 
 export function reducer(state: AppState, action: Action): AppState {
     switch (action.type) {
@@ -83,6 +89,25 @@ export function reducer(state: AppState, action: Action): AppState {
             return {
                 ...state, 
                 budgets: [...budgets, action.payload]
+            }
+        }
+        case 'FETCH_SAVING':
+            return { ...state, savings: action.payload }
+        case 'ADD_SAVING': 
+            return { 
+                ...state,
+                savings: [...state.savings, action.payload]    
+            }
+        case 'DELETE_SAVING': 
+            return { 
+                ...state, 
+                savings: state.savings.filter(saving => saving._id != action.payload) 
+            }
+        case 'UPDATE_SAVING': {
+            const savings = state.savings.filter(saving => saving._id != action.payload._id)
+            return {
+                ...state, 
+                savings: [...savings, action.payload]
             }
         }
         default:

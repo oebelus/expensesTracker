@@ -10,10 +10,13 @@ import { toast } from "react-toastify";
 export default function EditProfile() {
     const [state, dispatch] = useReducer(reducer, initialState)
     const user = state.user
+    const currency = state.currency
+    console.log(currency)
 
     const [nameBtn, setnameBtn] = useState(false)
     const [emailBtn, setEmailBtn] = useState(false)
     const [passwordBtn, setPasswordBtn] = useState(false)
+    const [currencyBtn, setCurrencyBtn] = useState(false)
 
     const [firstName, setFirstName] = useState("")
     const [familyName, setFamilyName] = useState("")
@@ -21,6 +24,7 @@ export default function EditProfile() {
     const [oldPassword, setOldPassword] = useState("")
     const [newPassword, setNewPassword] = useState("")
     const [image, setImage] = useState("")
+    const [currencyy, setCurrencyy] = useState("$")
 
     async function handleImage (e: ChangeEvent<HTMLInputElement>) {
         const selectedFile = e.target.files![0]; 
@@ -75,6 +79,13 @@ export default function EditProfile() {
             setPasswordBtn(!passwordBtn)
         })
         .catch((err) => toast.error(getError(err as ApiError)))
+    }
+
+    function handleCurrency(e: React.SyntheticEvent) {
+        e.preventDefault()
+        dispatch({type: 'SET_CURRENCY', payload: currencyy})
+        localStorage.setItem('currency', currencyy)
+        setCurrencyBtn(!currencyBtn)
     }
 
     return (
@@ -153,6 +164,25 @@ export default function EditProfile() {
                                     <p>{user!.email}</p> 
                                 </div>
                                 <button onClick={() => {setEmailBtn(!emailBtn); setEmail(user.email)}} className="bg-gray-900 p-1 pr-2 pl-2 rounded-lg mt-2">Change</button>
+                            </div>
+                        }
+                    </div>
+                    <div>
+                        { currencyBtn ? 
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h3 className="font-bold mb-2">Currency</h3>
+                                    <input className="text-black rounded-lg" type="text" value={currencyy} onChange={(e) => setCurrencyy(e.target.value)} />
+                                </div>
+                                <button onClick={handleCurrency} className="bg-gray-900 p-1 pr-5 pl-5 rounded-lg mt-2">Save</button>
+                            </div>
+                            : 
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h3 className="font-bold mb-2">Currency</h3>
+                                    <p>{currency}</p> 
+                                </div>
+                                <button onClick={() => {setCurrencyBtn(!currencyBtn)}} className="bg-gray-900 p-1 pr-2 pl-2 rounded-lg mt-2">Change</button>
                             </div>
                         }
                     </div>

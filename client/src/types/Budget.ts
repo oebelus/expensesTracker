@@ -1,4 +1,5 @@
 export type Budget = {
+    createdAt: Date,
     _id: string,
     amount: number,
     name: string,
