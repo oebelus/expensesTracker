@@ -33,15 +33,16 @@ export default function TxHistory() {
   }, [transactions, user._id])
 
   return (
-    <div className="dark:bg-gray-800 dark:text-gray-100 rounded-lg p-6">
+    <div className="dark:bg-gray-800 dark:text-gray-100 rounded-lg p-4">
       <h1 className="text-xl font-bold text-center mt-4">Recent Transactions</h1>
         {
+          history.length > 0 ? 
           history.map((transaction, key) => ( new Date(transaction.date).getMonth() === new Date().getMonth() && 
             <div key={key} className="max-w-md p-2 sm:flex sm:space-x-2">
               <div className="flex flex-col space-y-4">
                 <div>
                   <h2 className="font-semibold">{transaction.name}</h2>
-                  <div className="flex gap-10">
+                  <div className="flex gap-6">
                     <span className="text-sm dark:text-gray-400">{format(new Date(transaction.date))}</span>
                     <span className="text-sm dark:text-gray-400">{transaction.amount} {state.currency}</span>
                   </div>
@@ -49,6 +50,8 @@ export default function TxHistory() {
               </div>
             </div>
           ))
+          :
+          <p className="mt-4">| No Recent Transactions...</p>
         }
       </div>
     );

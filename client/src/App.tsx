@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
-    <div>
+    <div className='font-mono'>
       <ToastContainer position='bottom-center' limit={4}></ToastContainer>
         <Outlet/>
     </div>

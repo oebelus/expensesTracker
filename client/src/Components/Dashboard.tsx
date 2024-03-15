@@ -59,7 +59,7 @@ export default function Dashboard() {
     setYearly(filterByYear)
     filterByYear.forEach((transaction) => {
       const monthIndex = new Date(transaction.date).getMonth()
-      const transactionAmount = parseInt(transaction.amount)
+      const transactionAmount = transaction.amount
 
       if (transactionAmount > 0) 
         monthlyTotalsCopy.income[monthIndex] += transactionAmount
@@ -89,7 +89,7 @@ export default function Dashboard() {
   const pIncome = ((income/total)*100).toFixed(2)
 
   const cardsData = [
-    { percent: `${pBudget}%`, name: "Available Balance", money: budget, color: "bg-gray-700", border: "border-violet-200", shadow: "bg-violet-600", text: "text-violet-900" },
+    { percent: `${pBudget}%`, name: "Balance", money: budget, color: "bg-gray-700", border: "border-violet-200", shadow: "bg-violet-600", text: "text-violet-900" },
     { percent: `${pExpense}%`, name: "Total Expense", money: expense, color: "bg-gray-700", border: "border-pink-200", shadow: "bg-pink-600", text: "text-pink-900" },
     { percent: `${pIncome}%`, name: "Total Income", money: income, color: "bg-gray-700", border: "border-green-200", shadow: "bg-green-600", text: "text-green-900" }
   ];
@@ -115,20 +115,20 @@ export default function Dashboard() {
       </div>
       <div id="dashboard" className="grid gap-4 lg:grid-cols-4 sm:col-span-3">
         <div className="w-auto flex flex-col relative items-center bg-gray-800 rounded-lg sm:col-span-1 lg:col-span-2 md:col-span-2">
-          <div className='lg:w-[20%] md:w-[10%] sm:w-[5%] absolute top-2 right-2'>
+          <div className='lg:w-[20%] md:w-[10%] w-[1%] absolute top-2 right-2'>
             <Years years={years} setClickedYear={setClickedYear}/>
           </div>
           <Plot monthlyData={monthlyTotals} />
         </div>
         <div className="w-auto flex flex-col relative items-center bg-gray-800 rounded-lg sm:col-span-1 lg:col-span-2 md:col-span-2">    
-          <div className='lg:w-[20%] md:w-[10%] sm:w-[5%] absolute top-2 right-2'>
+          <div className='lg:w-[20%] md:w-[10%] w-[10%] absolute top-2 right-2'>
             <Months setMonth={setMonth}/>
           </div>
-          <PieChart transactions={monthly} />
+            <PieChart transactions={monthly} />
         </div>
       </div>
       <div className="lg:grid lg:grid-cols-4 mt-4">
-        <div className="flex col-span-2 gap-6 p-2 justify-center">
+        <div className="flex col-span-2 gap-4 p-2 justify-center">
           <TxHistory/>
           <UpcomingPayments />
         </div>

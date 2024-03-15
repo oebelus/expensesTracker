@@ -1,6 +1,6 @@
 export type Transaction = {
     _id: string,
-    amount: string,
+    amount: number,
     name: string,
     date: Date,
     unchangedDate?: Date,

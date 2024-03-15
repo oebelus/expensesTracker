@@ -8,12 +8,11 @@ import { toast } from "react-toastify"
 
 export default function Wallet() {
   const [name, setName] = useState<Transaction['name']>("")
-  const [amount, setAmount] = useState<Transaction['amount']>("")
+  const [amount, setAmount] = useState<Transaction['amount']>(0)
   const [category, setCategory] = useState<Transaction['category']>("")
   const [date, setDate] = useState<Transaction['date']>(new Date())
   const [recurring, setRecurring] = useState<Transaction['recurring']>(false)
   const [txType, setTxType] = useState<Transaction['txType']>("")
-  const [budgetId, setBudgetId] = useState("")
 
   const dictionary: Record<string, boolean> = {
     "yes": true,
@@ -33,9 +32,12 @@ export default function Wallet() {
   }, [user._id])
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = e.target.value
-    const parseDate = new Date(selectedDate)
-    setDate(parseDate)
+    const inputDate = new Date(e.target.value);
+    if (!isNaN(inputDate.getTime())) {
+        setDate(inputDate);
+    } else {
+        setDate(new Date());
+    }
   }
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
@@ -43,10 +45,9 @@ export default function Wallet() {
     const length = budgets.length
     
     for (let i = 0; i < length; i++) {
-      if (budgets[i].name.toLowerCase() === category.toLowerCase()) {
-        setBudgetId(budgets[i]._id)
-        const remaining = budgets[i].remaining - parseFloat(amount) 
-        axios.put(`http://localhost:4000/budgets/editBudget/${user._id}/${budgetId}`, {
+      if (budgets[i].name.toLowerCase() === category.toLowerCase() && (new Date(budgets[i].createdAt)).getMonth() === (new Date().getMonth())) {
+        const remaining = budgets[i].remaining - amount 
+        axios.put(`http://localhost:4000/budgets/editBudget/${user._id}/${budgets[i]._id}`, {
           remaining: remaining,
           amount: budgets[i].amount,
           name: budgets[i].name,
@@ -88,7 +89,7 @@ export default function Wallet() {
             </div>
             <div className="col-span-full sm:col-span-3">
               <label htmlFor="transaction" className="text-sm mb-2">Amount</label>
-              <input value={amount} onChange={(e) => setAmount(e.target.value)} id="amount" type="number" placeholder="Amount" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>
+              <input value={amount} onChange={(e) => setAmount(parseInt(e.target.value))} id="amount" type="number" placeholder="Amount" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>
             </div>
             <div className="col-span-full sm:col-span-3">
               <label htmlFor="category" className="text-sm mb-2">Category</label>
@@ -96,7 +97,7 @@ export default function Wallet() {
             </div>
             <div className="col-span-full sm:col-span-3">
               <label htmlFor="date" className="text-sm mb-2">Date</label>
-              <input value={date.toISOString().substr(0, 10)} onChange={handleDateChange} id="date" type="date" placeholder="Date" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>  
+              <input value={(new Date(date)).toISOString().slice(0, 10)} onChange={handleDateChange} id="date" type="date" placeholder="Date" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>  
             </div>
             <div className="col-span-full sm:col-span-2">
               <label htmlFor="state" className="text-sm block mb-2">Is it recurring?</label>

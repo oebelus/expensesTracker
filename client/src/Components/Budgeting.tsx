@@ -8,8 +8,8 @@ import { Budget } from "../types/Budget"
 import { initialState, reducer } from "../context"
 import Months from "./dashboard/Months"
 import Years from "./dashboard/Years"
-import AddModal from "./Modals.tsx/Budgeting/AddModal"
-import EditModal from "./Modals.tsx/Budgeting/EditModal"
+import AddBudget from "./Modals.tsx/Budgeting/AddBudget"
+import EditBudget from "./Modals.tsx/Budgeting/EditBudget"
 
 export default function Budgeting() {
   const [state, dispatch] = useReducer(reducer, initialState)
@@ -60,6 +60,21 @@ export default function Budgeting() {
   }, [user._id, budgets])
 
   useEffect(() => {
+    const length = budgets.length
+    for (let i = 0; i < length; i++) {
+      if (budgets[i].recurring && (new Date(budgets[0].createdAt).getMonth()) !== new Date().getMonth()) {
+        axios.post(`http://localhost:4000/budgets/addBudget/${user._id}`, {
+          amount: budgets[i].amount,
+          name: budgets[i].name,
+          remaining: budgets[i].amount,
+          isFull: true,
+          recurring: true,
+        })
+      }
+    }
+  })
+
+  useEffect(() => {
     axios.get(`http://localhost:4000/transactions/${user._id}`)
     .then((response) => {
       dispatch({type: 'FETCH_TX', payload: response.data})
@@ -83,6 +98,8 @@ export default function Budgeting() {
   }
 
   const closeEdit = () => {
+    setSuggestion("")
+    console.log(suggestion)
     setEdit(false)
   }
 
@@ -95,9 +112,15 @@ export default function Budgeting() {
     setAdd(true)
   }
 
+  useEffect(() => {
+    
+  })
+
   const suggestedBudget = (suggested: {name: string}) => {
     setAdd(true)
     setSuggestion(suggested.name)
+    setBudget(undefined)
+    console.log(suggestion)
   }
 
   return (
@@ -106,9 +129,9 @@ export default function Budgeting() {
       <p className="ml-4 mb-6"><FontAwesomeIcon icon={faArrowRight}/> Set your monthly spending limits</p>
       <h2 className="text-2xl mb-2">Your budgets:</h2>
       <button className="p-4" onClick={handleAdd}><FontAwesomeIcon icon={faPlus}/> Add a Budget</button>
-      <AddModal add={add} closeAdd={closeAdd} transactions={transactions}/>
-      {budget && <EditModal edit={edit} closeEdit={closeEdit} budget={budget} suggestion={suggestion}/>}
-          <div>
+      <AddBudget add={add} closeAdd={closeAdd} transactions={transactions} suggestion={suggestion}/>
+      {budget && <EditBudget edit={edit} closeEdit={closeEdit} budget={budget}/>}
+          <div className="p-6 flex gap-4 lg:w-[64%]">
             <Months setMonth={setMonth} />
             <Years years={years} setClickedYear={setClickedYear} />
           </div>

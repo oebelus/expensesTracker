@@ -25,7 +25,7 @@ export default function DashNav() {
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div className="relative flex h-16 items-center justify-between">
-              <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
+              <div className="absolute inset-y-0 left-0 flex items-center md:hidden sm:hidden">
                 {/* Mobile menu button*/}
                 <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                   <span className="absolute -inset-0.5" />
@@ -33,7 +33,7 @@ export default function DashNav() {
                 </Disclosure.Button>
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="flex flex-shrink-0 items-center">
+                <div className="flex flex-shrink-0 items-center md:ml-20">
                     <a href={`${currentPath.replace(window.location.pathname, "dashboard")}`}>
                         <h1 
                         className="text-xl font-bold dark:border-transparent dark:text-violet-400 dark:border-violet-400"
@@ -41,9 +41,6 @@ export default function DashNav() {
                         >
                             Expense Tracker</h1>
                     </a>
-                </div>
-                <div className="hidden sm:ml-6 sm:block">
-                  
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">

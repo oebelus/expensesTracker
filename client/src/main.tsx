@@ -17,6 +17,7 @@ import BudgetingPage from './pages/BudgetingPage.tsx'
 import SavingPage from './pages/SavingPage.tsx'
 import Profile from './pages/Profile.tsx'
 import ProtectedRoute from './Components/ProtectedRoute.tsx'
+import ErrorPage from './pages/ErrorPage.tsx'
 
 const userId = localStorage.getItem('userId')
 
@@ -32,7 +33,9 @@ const router = createBrowserRouter(
         <Route path={`${userId}/budgeting`} element={<BudgetingPage/>}></Route>
         <Route path={`${userId}/saving`} element={<SavingPage/>}></Route>
         <Route path={`${userId}/profile`} element={<Profile/>}></Route>
+        <Route path="*" element={<ErrorPage/>} />
       </Route>
+      
     </Route>
   )
 )

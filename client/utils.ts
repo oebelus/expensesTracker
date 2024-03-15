@@ -1,3 +1,4 @@
+import { IconDefinition, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ApiError } from './src/types/ApiError'
 
 export const getError = (error: ApiError) => {
@@ -23,4 +24,9 @@ export function day(date: Date): string {
 export const dictionary: Record<string, boolean> = {
     "true": true,
     "false": false,
+}
+
+export const recurringDictionary: Record<string, IconDefinition> = {
+    "true": faCheck,
+    "false": faXmark
 }

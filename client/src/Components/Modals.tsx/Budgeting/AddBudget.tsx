@@ -8,13 +8,14 @@ import { dictionary, getError } from "../../../../utils";
 import { ApiError } from "../../../types/ApiError";
 import { Transaction } from "../../../types/Transaction";
 
-interface AddModalProps {
+interface AddBudgetProps {
     add: boolean;
     closeAdd: () => void;
-    transactions: Transaction[]
+    transactions: Transaction[];
+    suggestion?: string
 }
 
-export default function AddModal({add, closeAdd, transactions}: AddModalProps) {
+export default function AddBudget({add, closeAdd, transactions, suggestion}: AddBudgetProps) {
     const [amount, setAmount] = useState<Budget["amount"]>()
     const [name, setName] = useState<Budget["name"]>("")
     const [remaining, setRemaining] = useState<Budget["remaining"]>()
@@ -27,9 +28,8 @@ export default function AddModal({add, closeAdd, transactions}: AddModalProps) {
         e.preventDefault();
         let updatedRemaining = remaining
         transactions.forEach((transaction) => {
-          return updatedRemaining! -= transaction.category === name ? Math.abs(parseInt(transaction.amount)) : 0
+          return updatedRemaining! -= transaction.category === name && new Date(transaction.date).getMonth() === (new Date()).getMonth() ? Math.abs(transaction.amount) : 0
         })
-        console.log(updatedRemaining)
         axios.post(`http://localhost:4000/budgets/addBudget/${user._id}`, {
           amount,
           name,
@@ -59,7 +59,7 @@ export default function AddModal({add, closeAdd, transactions}: AddModalProps) {
                 <div className="grid grid-cols-6 gap-4 col-span-full lg:col-span-3">
                 <div className="col-span-full sm:col-span-3">
                     <label htmlFor="firstname" className="text-sm mb-2">Name</label>
-                    <input value={name} onChange={(e) => setName(e.target.value)} id="name" type="text" placeholder="Name" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" />
+                    <input value={suggestion ? suggestion : name} onChange={(e) => setName(e.target.value)} id="name" type="text" placeholder="Name" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" />
                 </div>
                 <div className="col-span-full sm:col-span-3">
                     <label htmlFor="transaction" className="text-sm mb-2">Amount</label>

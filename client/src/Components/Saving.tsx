@@ -31,14 +31,8 @@ export default function Budgets() {
   const [amount, setAmount] = useState<Budget["amount"]>()
   const [name, setName] = useState<Budget["name"]>("")
   const [remaining, setRemaining] = useState<Budget["remaining"]>()
-  const [recurring, setRecurring] = useState<Budget["recurring"]>(false)
   const [savingId, setSavingId] = useState<Budget["_id"]>("")
   const [data, setData] = useState<Budget[]>([])
-
-  const dictionary: Record<string, boolean> = {
-    "true": true,
-    "false": false,
-  }
 
   const [state, ] = useReducer(reducer, initialState)
   const userId = state.user._id
@@ -58,7 +52,6 @@ export default function Budgets() {
       name,
       remaining,
       isFull: remaining! > amount! ? true : false,
-      recurring: recurring,
     }).then(() => {
       toast.success("Saving Plan Added Successfully!")
       setAdd(false)
@@ -80,7 +73,6 @@ export default function Budgets() {
     setAmount(selectedSaving.amount)
     setRemaining(selectedSaving.remaining)
     setSavingId(selectedSaving._id)
-    setRecurring(selectedSaving.recurring)
   }
 
   const handleEdit = (e: React.SyntheticEvent) => {
@@ -89,7 +81,6 @@ export default function Budgets() {
           remaining: remaining,
           amount: amount,
           name: name,
-          recurring: recurring,
           isFull: remaining! <= amount! ? true : false
     }).then(() => toast.success("Saving Edited Successfully")).catch((err) => toast.error(getError(err as ApiError)))
     setEdit(false)
@@ -109,7 +100,6 @@ export default function Budgets() {
     setName("")
     setAmount(0)
     setRemaining(0)
-    setRecurring(false)
   }
 
   const suggestedSaving = (suggested: {name: string}) => {
@@ -119,7 +109,7 @@ export default function Budgets() {
 
   return (
     <div className="p-6 dark:bg-gray-800 dark:text-gray-50">
-      <h1 className="text-3xl font-bold mb-4">Your Savings</h1>
+      <h1 className="text-3xl font-bold mb-4">Your Yearly Savings</h1>
       <p className="ml-4 mb-6"><FontAwesomeIcon icon={faArrowRight}/> Set your monthly spending limits</p>
       <h2 className="text-2xl mb-10">Your Savings:</h2>
       <button className="p-4" onClick={handleAdd}><FontAwesomeIcon icon={faPlus}/> Add a Saving Plan</button>
@@ -147,19 +137,6 @@ export default function Budgets() {
               <div className="col-span-full sm:col-span-3">
                 <label htmlFor="remaining" className="text-sm mb-2">Remaining</label>
                 <input value={remaining} onChange={(e) => setRemaining(parseInt(e.target.value))} id="category" type="number" placeholder="Category" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>
-              </div>
-              <div className="col-span-full sm:col-span-2">
-                <label htmlFor="state" className="text-sm block mb-2">Is it recurring?</label>
-                  <div className="flex">
-                    <div className="flex items-center mr-4">
-                        <input id="yes" type="radio" name="recurring" onChange={(e) => setRecurring(dictionary[e.target.value])} value="yes" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                        <label htmlFor="yes" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Yes</label>
-                    </div>
-                    <div className="flex items-center">
-                        <input id="no" type="radio" name="recurring" onChange={(e) => setRecurring(dictionary[e.target.value])} value="no" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                        <label htmlFor="no" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">No</label>
-                    </div>
-                  </div>
               </div>
             </div>
             <button type="submit" style={{"width": "90%"}} className="px-4 py-2 border rounded-md dark:border-gray-100">Add</button>
@@ -190,19 +167,6 @@ export default function Budgets() {
               <div className="col-span-full sm:col-span-3">
                 <label htmlFor="remaining" className="text-sm mb-2">Remaining</label>
                 <input value={remaining} onChange={(e) => setRemaining(parseInt(e.target.value))} id="category" type="number" placeholder="Category" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>
-              </div>
-              <div className="col-span-full sm:col-span-2">
-                <label htmlFor="state" className="text-sm block mb-2">Is it recurring?</label>
-                  <div className="flex">
-                    <div className="flex items-center mr-4">
-                        <input id="yes" type="radio" name="recurring" onChange={(e) => setRecurring(dictionary[e.target.value])} value="yes" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                        <label htmlFor="yes" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Yes</label>
-                    </div>
-                    <div className="flex items-center">
-                        <input id="no" type="radio" name="recurring" onChange={(e) => setRecurring(dictionary[e.target.value])} value="no" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                        <label htmlFor="no" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">No</label>
-                    </div>
-                  </div>
               </div>
             </div>
             <div className="flex gap-4">

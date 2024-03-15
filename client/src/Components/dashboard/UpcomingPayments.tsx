@@ -22,15 +22,16 @@ export default function UpcomingPayments() {
   })
 
   return (
-    <div className="dark:bg-gray-800 dark:text-gray-100 rounded-lg p-6">
+    <div className="dark:bg-gray-800 dark:text-gray-100 rounded-lg p-4">
         <h1 className="text-xl font-bold text-center mt-4">Upcoming Payments</h1>
         {
+          upcoming.length > 0 ?
             upcoming.map((transaction, key) => ( new Date(transaction.date).getMonth() === new Date().getMonth() && 
               <div key={key} className="max-w-md p-2 sm:flex sm:space-x-2 dark:bg-gray-800 dark:text-gray-100">
                 <div className="flex flex-col space-y-4">
                   <div>
                     <h2 className="font-semibold">{transaction.name}</h2>
-                    <div className="flex gap-10">
+                    <div className="flex gap-4">
                       {(() => {
                         const currentDate = new Date(transaction.date);
                         currentDate.setMonth(currentDate.getMonth() + 1);
@@ -44,6 +45,8 @@ export default function UpcomingPayments() {
                 </div>
               </div>
             ))
+            : 
+            <p className="mt-4">| No Upcoming Payments...</p>
           }
     </div>
   )

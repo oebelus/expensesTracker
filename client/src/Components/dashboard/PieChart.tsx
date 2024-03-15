@@ -2,6 +2,8 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { Transaction } from '../../types/Transaction';
 import { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPieChart } from '@fortawesome/free-solid-svg-icons';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
   
@@ -12,7 +14,7 @@ export function PieChart(transactions: {transactions: Transaction[]}) {
  useEffect(() => {
     const categories: Record<Transaction["category"], number> = {};
     transactions["transactions"].forEach((transaction) => {
-      const amount = parseInt(transaction.amount);
+      const amount = transaction.amount;
       if (amount < 0) {
         if (!categories[transaction.category]) {
           categories[transaction.category] = 0;
@@ -51,14 +53,27 @@ export function PieChart(transactions: {transactions: Transaction[]}) {
     ],
   };
   
-  return ( 
-    <div className='w-full h-[90%] mt-2'>
-      <Pie
-      height={"330px"} 
-      width={"200px"}
-      data={data} 
-    />
-    </div>
-  )
+  return (
+    transactions["transactions"].length > 0 ? (
+      <div className='items-center w-full lg:h-[400px] md:h-[300px] mt-2 w-content flex flex-col relative mb-4'>
+        <Pie
+          height={"330px"} 
+          width={"200px"}
+          data={data} 
+        />
+      </div>
+    ) : (
+        <div className="mt-auto bg-gray-900 text-white-700 px-4 py-3" role="alert">
+        <FontAwesomeIcon icon={faPieChart}/>
+          <p className="font-bold">Pie Chart needs data to render :3</p>
+          <p className="text-sm">
+            It appears like you still didn't add any transaction this month, add your first one{' '}
+            <a className="text-violet-600 hover:text-violet-700 font-bold" href={`${window.location.pathname.replace(window.location.pathname, "wallet")}`}>
+              here
+            </a>
+          </p>
+        </div>
+    )
+  );
 }
   

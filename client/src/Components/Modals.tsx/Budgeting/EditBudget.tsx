@@ -7,22 +7,21 @@ import { toast } from 'react-toastify';
 import { dictionary, getError } from '../../../../utils';
 import { ApiError } from '../../../types/ApiError';
 
-interface EditModalProps {
+interface EditBudgetProps {
     edit: boolean;
     closeEdit: () => void
     budget: Budget
-    suggestion: string
 }
 
-export default function EditModal({edit, closeEdit, budget, suggestion}: EditModalProps) {
-    const [amount, setAmount] = useState<Budget["amount"]>()
-    const [name, setName] = useState<Budget["name"]>("")
-    const [remaining, setRemaining] = useState<Budget["remaining"]>()
+export default function EditBudget({edit, closeEdit, budget}: EditBudgetProps) {
+    const [amount, setAmount] = useState<Budget["amount"]>(budget.amount || 0)
+    const [name, setName] = useState<Budget["name"]>(budget.name)
+    const [remaining, setRemaining] = useState<Budget["remaining"]>(budget.remaining || 0)
     const [recurring, setRecurring] = useState<Budget["recurring"]>(false)
-    
     const [state, dispatch] = useReducer(reducer, initialState)
+    
     const user = state.user
-
+    
     const handleEdit = (e: React.SyntheticEvent) => {
         e.preventDefault()
         axios.put(`http://localhost:4000/budgets/editBudget/${user._id}/${budget._id}`, {
@@ -64,25 +63,25 @@ export default function EditModal({edit, closeEdit, budget, suggestion}: EditMod
                 <div className="grid grid-cols-6 gap-4 col-span-full lg:col-span-3">
                     <div className="col-span-full sm:col-span-3">
                     <label htmlFor="firstname" className="text-sm mb-2">Name</label>
-                    <input value={suggestion?suggestion:budget.name} onChange={(e) => setName(e.target.value)} id="name" type="text" placeholder="Name" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" />
+                    <input value={name} onChange={(e) => setName(e.target.value)} id="name" type="text" placeholder="Name" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" />
                     </div>
                     <div className="col-span-full sm:col-span-3">
                     <label htmlFor="transaction" className="text-sm mb-2">Amount</label>
-                    <input value={budget.amount} onChange={(e) => setAmount(parseInt(e.target.value))} id="amount" type="number" placeholder="Amount" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>
+                    <input value={amount} onChange={(e) => setAmount(parseInt(e.target.value))} id="amount" type="number" placeholder="Amount" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>
                     </div>
                     <div className="col-span-full sm:col-span-3">
                     <label htmlFor="remaining" className="text-sm mb-2">Remaining</label>
-                    <input value={budget.remaining} onChange={(e) => setRemaining(parseInt(e.target.value))} id="category" type="number" placeholder="Category" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>
+                    <input value={remaining} onChange={(e) => setRemaining(parseInt(e.target.value))} id="category" type="number" placeholder="Category" className="w-full rounded-md focus:ring focus:ri focus:ri dark:border-gray-700 dark:text-gray-900" required/>
                     </div>
                     <div className="col-span-full sm:col-span-2">
                     <label htmlFor="state" className="text-sm block mb-2">Is it recurring?</label>
                         <div className="flex">
                         <div className="flex items-center mr-4">
-                            <input id="yes" type="radio" name="recurring" onChange={(e) => setRecurring(dictionary[e.target.value])} value="true" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                            <input id="yes" type="radio" name="recurring" onChange={(e) => setRecurring(dictionary[e.target.value])} value="true" checked={recurring === true} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                             <label htmlFor="yes" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Yes</label>
                         </div>
                         <div className="flex items-center">
-                            <input id="no" type="radio" name="recurring" onChange={(e) => setRecurring(dictionary[e.target.value])} value="false" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                            <input id="no" type="radio" name="recurring" onChange={(e) => setRecurring(dictionary[e.target.value])} value="false" checked={recurring === false} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                             <label htmlFor="no" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">No</label>
                         </div>
                         </div>

@@ -19,11 +19,10 @@ export default function SavingPlans() {
         .catch((error) => console.log(getError(error as ApiError)))
     }, [user._id])
 
-    console.log(savings)
     return (
         <div className="dark:bg-gray-800 dark:text-gray-100 rounded-lg p-4">
             <h1 className="text-xl font-bold text-center mt-4">Your 2024 Saving Plans</h1>
-            {
+            { savings.length > 0 ? 
                 savings.map((saving, key) => (
                 <div key={key} className="p-2 sm:flex sm:space-x-2 dark:bg-gray-800 dark:text-gray-100">
                   <div className="flex flex-col space-y-4">
@@ -45,6 +44,10 @@ export default function SavingPlans() {
                     </div>
                 </div>
               ))
+              :
+              <div className="mt-4 text-white-700 px-4 py-3" role="alert">
+                <p>Add Your First <a className="text-violet-600 hover:text-violet-700 font-bold" href={`${window.location.pathname.replace(window.location.pathname, "saving")}`}>Saving Plan</a></p>
+              </div>
             }
         </div>
     )

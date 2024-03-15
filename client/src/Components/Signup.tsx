@@ -11,7 +11,6 @@ export default function SignUp() {
     const [email, setEmail] = useState("") 
     const [password, setPassword] = useState("") 
     const [confirmPassword, setConfirmPassword] = useState("") 
-    const [userId, setUserId] = useState("") 
 
     const [, dispatch] = useReducer(reducer, initialState)
 
@@ -29,8 +28,7 @@ export default function SignUp() {
         })
         .then(response => {
             dispatch({type: 'USER_SIGNIN', payload: response.data})
-            setUserId(response.data._id)
-            localStorage.setItem('userId', userId)
+            localStorage.setItem('userId', response.data._id)
             localStorage.setItem('userInfo', JSON.stringify(response.data))
             window.location.href = `${response.data._id}/dashboard`;
         })
