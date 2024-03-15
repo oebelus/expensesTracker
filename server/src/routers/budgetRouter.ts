@@ -25,7 +25,6 @@ budgetRouter.post('/addBudget/:userId', async (req, res) => {
                 recurring: req.body.recurring,
                 userId: userId
             } as Budget)
-            console.log(budget, userId)
 
             res.json({
                 _id: budget._id,
@@ -46,7 +45,6 @@ budgetRouter.put('/editBudget/:userId/:id', async (req, res) => {
     try {
         const budgetId = req.params.id
         const updateBudget: Budget = req.body
-        console.log(updateBudget)
         const budgetToUpdate = await BudgetModel.findByIdAndUpdate(budgetId, updateBudget, {new: true})
 
         if (!budgetToUpdate) return res.status(404).json({ error: 'Budget not found' });
@@ -54,7 +52,6 @@ budgetRouter.put('/editBudget/:userId/:id', async (req, res) => {
         res.json(budgetToUpdate)
         
     } catch (err) { 
-        console.log(err)
         res.status(500).json({ error: 'Internal Server Error' })
     }
 })
