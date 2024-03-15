@@ -1,7 +1,7 @@
 type Transaction = {
     _id: string,
     category: string,
-    amount: string,
+    amount: number,
     name: string,
     date: Date,
     recurring: string,

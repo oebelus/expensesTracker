@@ -50,7 +50,7 @@ userRouter.post("/login", async (req: Request, res: Response) => {
     const user = await UserModel.findOne({ email: req.body.email })
 
     if (user) {
-        if (req.body.password === user.password) {
+        if (bcrypt.compareSync(req.body.password, user.password)) {
             res.json({
                 _id: user._id,
                 firstName: user.firstName,
@@ -88,14 +88,8 @@ userRouter.post("/signup", async (req: Request, res: Response) => {
     })
 })
 
-userRouter.post('/image', upload.single('pfp'), async (req, res) => {
-    console.log(JSON.stringify(req.file))
-    const response = req.file?.originalname
-    return res.send(req.file?.filename)
-})
-
 userRouter.put('/image/:userId', upload.single('pfp'), async (req, res) => {
-    console.log(JSON.stringify(req.file))
+    //console.log(JSON.stringify(req.file))
     try {
         const userId = req.params.userId
         const user = await UserModel.findById(userId)
@@ -106,6 +100,49 @@ userRouter.put('/image/:userId', upload.single('pfp'), async (req, res) => {
         return res.send(req.file?.filename)
     }
     catch (err) {
+        res.status(500).send("Internal Server Error")
+    }
+})
+
+userRouter.put('/name/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const user = await UserModel.findById(userId)
+        if (!user) return res.status(404).send("User Not Found")
+        user.firstName = req.body.firstName
+        user.familyName = req.body.familyName
+        await user.save()
+        res.send(user)
+    } catch (err) {
+        res.status(500).send("Internal Server Error")
+    }
+})
+
+userRouter.put('/email/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const user = await UserModel.findById(userId)
+        if (!user) return res.status(404).send("User Not Found")
+        const existingEmail = await UserModel.findOne({email: req.body.email})
+        if (existingEmail) return res.send("Email already in use")
+        user.email = req.body.email
+        await user.save()
+        console.log(user)
+    } catch (err) {
+        res.status(500).send("Internal Server Error")
+    }
+})
+
+userRouter.put('/password/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const user = await UserModel.findById(userId)
+        if (!user) return res.status(404).send("User Not Found")
+        if (bcrypt.compareSync(req.body.oldPassword, user.password)) {
+            user.password = req.body.newPassword
+            await user.save()
+        }
+    } catch (err) {
         res.status(500).send("Internal Server Error")
     }
 })
