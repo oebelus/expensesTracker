@@ -128,7 +128,7 @@ export default function Dashboard() {
         </div>
       </div>
       <div className="lg:grid lg:grid-cols-4 mt-4">
-        <div className="flex col-span-2 gap-4 p-2 justify-center">
+        <div className="flex flex-col sm:flex-row lg:flex-row md:flex-row sm:col-span-1 lg:col-span-2 sm:gap-2 gap-4 justify-between">
           <TxHistory/>
           <UpcomingPayments />
         </div>

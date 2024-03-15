@@ -17,7 +17,7 @@ interface AddBudgetProps {
 
 export default function AddBudget({add, closeAdd, transactions, suggestion}: AddBudgetProps) {
     const [amount, setAmount] = useState<Budget["amount"]>()
-    const [name, setName] = useState<Budget["name"]>("")
+    const [name, setName] = useState<Budget["name"]>(suggestion ? suggestion : "")
     const [remaining, setRemaining] = useState<Budget["remaining"]>()
     const [recurring, setRecurring] = useState<Budget["recurring"]>(false)
 
@@ -32,13 +32,14 @@ export default function AddBudget({add, closeAdd, transactions, suggestion}: Add
         })
         axios.post(`http://localhost:4000/budgets/addBudget/${user._id}`, {
           amount,
-          name,
+          name: suggestion ? suggestion : name,
           remaining: updatedRemaining,
           isFull: remaining! > amount! ? true : false,
           recurring: recurring,
         }).then((response) => {
-          toast.success("Budget Added Successfully!")
-          dispatch({type: 'ADD_BUDGET', payload: response.data})
+            toast.success("Budget Added Successfully!")
+            dispatch({type: 'ADD_BUDGET', payload: response.data})
+            closeAdd()
         })
         .catch((err) => toast.error(getError(err as ApiError)))
     }

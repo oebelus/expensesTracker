@@ -55,10 +55,10 @@ export function PieChart(transactions: {transactions: Transaction[]}) {
   
   return (
     transactions["transactions"].length > 0 ? (
-      <div className='items-center w-full lg:h-[400px] md:h-[300px] mt-2 w-content flex flex-col relative mb-4'>
+      <div className='items-center w-full lg:h-[400px] md:h-[300px] mt-12 w-content flex flex-col relative mb-4'>
         <Pie
-          height={"330px"} 
-          width={"200px"}
+          height={"230px"} 
+          width={"100px"}
           data={data} 
         />
       </div>

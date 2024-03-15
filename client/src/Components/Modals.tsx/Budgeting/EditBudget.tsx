@@ -34,6 +34,7 @@ export default function EditBudget({edit, closeEdit, budget}: EditBudgetProps) {
         .then(() => {
            toast.success("Budget Edited Successfully")
            dispatch({type: 'UPDATE_BUDGET', payload: budget!})
+           closeEdit()
         })
         .catch((err) => toast.error(getError(err as ApiError)))
     }
@@ -43,6 +44,7 @@ export default function EditBudget({edit, closeEdit, budget}: EditBudgetProps) {
         .then(() => {
           toast("Budget Deleted Successfully!")
           dispatch({type: 'DELETE_BUDGET', payload: budget!._id!})
+          closeEdit()
         })
         .catch((err) => getError(err as ApiError));
     }

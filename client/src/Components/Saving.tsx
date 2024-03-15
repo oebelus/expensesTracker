@@ -184,8 +184,8 @@ export default function Budgets() {
             <div key={key} className="lg:w-[65%] p-4">
               <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">{saving.name} <button onClick={() => openEdit(saving)}><FontAwesomeIcon icon={faPen}/></button></h3>
               <div className="mb-2 flex justify-between items-center">
-                <span className="text-sm">You have saved {saving.remaining} {state.currency} towards your goal of {saving.amount} {state.currency}</span>
-                <span className="text-sm text-gray-800 dark:text-white">{(saving.remaining / saving.amount)*100}%</span>
+                <span className="text-sm">You have saved {saving.amount - saving.remaining} {state.currency} towards your goal of {saving.amount} {state.currency}</span>
+                <span className="text-sm text-gray-800 dark:text-white">{(100-(saving.remaining / saving.amount)*100).toFixed(2)}%</span>
               </div>
               <div 
                 className="flex w-full h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700" 
@@ -194,7 +194,7 @@ export default function Budgets() {
                 aria-valuemin={0} 
                 aria-valuemax={100}
               >
-                <div className="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap transition duration-500 dark:bg-blue-500" style={{"width": `${(saving.remaining / saving.amount)*100}%`}}></div>
+                <div className="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap transition duration-500 dark:bg-blue-500" style={{"width": `${100-(saving.remaining / saving.amount)*100}%`}}></div>
               </div>
             </div>
           )

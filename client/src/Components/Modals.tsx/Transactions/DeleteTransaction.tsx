@@ -23,13 +23,14 @@ export default function DeleteTransaction({del, closeDel, transaction, budgets}:
         try {
             await axios.delete(`http://localhost:4000/transactions/deleteTransaction/${user._id}/${transaction._id}`)
             dispatch({type: "DELETE_TX", payload: transaction._id})
+            toast.success("Transaction Deleted Successfully")
             const length = budgets.length
             for (let i = 0; i < length; i++) {
                 if (budgets[i].name.toLowerCase() === transaction.category.toLowerCase() && (new Date(budgets[i].createdAt)).getMonth() === (new Date().getMonth())) {
                     const remaining = budgets[i].remaining + Math.abs(transaction.amount) 
-                    console.log(remaining)
+                    console.log(budgets[i].amount, budgets[i].remaining, remaining)
                     axios.put(`http://localhost:4000/budgets/editBudget/${user._id}/${budgets[i]._id}`, {
-                        remaining: remaining > transaction.amount ? transaction.amount : remaining,
+                        remaining: remaining > budgets[i].amount ? budgets[i].amount : remaining,
                         amount: budgets[i].amount,
                         name: budgets[i].name,
                         recurring: budgets[i].recurring,
@@ -38,6 +39,7 @@ export default function DeleteTransaction({del, closeDel, transaction, budgets}:
                     .then(() =>{
                         dispatch({type: 'UPDATE_BUDGET', payload: budgets.find(budget => budget._id === budgets[i]._id)!})
                         toast.success('Budget Updated Successfully!')
+                        closeDel()
                     })
                     .catch((err) => console.log(getError(err as ApiError)))
                 }

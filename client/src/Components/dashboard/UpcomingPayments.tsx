@@ -22,7 +22,7 @@ export default function UpcomingPayments() {
   })
 
   return (
-    <div className="dark:bg-gray-800 dark:text-gray-100 rounded-lg p-4">
+    <div className="dark:bg-gray-800 w-full dark:text-gray-100 rounded-lg p-4">
         <h1 className="text-xl font-bold text-center mt-4">Upcoming Payments</h1>
         {
           upcoming.length > 0 ?

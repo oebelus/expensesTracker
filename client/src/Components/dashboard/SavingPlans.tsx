@@ -28,9 +28,9 @@ export default function SavingPlans() {
                   <div className="flex flex-col space-y-4">
                     <div>
                       <h2 className="font-semibold">{saving.name}</h2>
-                      <div className="sm:w-[600px] lg:w-[450px] flex gap-10 justify-between">
-                        <span className="text-sm dark:text-gray-400 mb-2">{saving.remaining}$/{saving.amount} {state.currency}</span>
-                        <span className="text-sm text-gray-800 dark:text-white">{(saving.remaining / saving.amount)*100}%</span>
+                      <div className="sm:w-[500px] lg:w-[290px] flex gap-10 justify-between">
+                        <span className="text-sm dark:text-gray-400 mb-2">{saving.remaining}{state.currency} / {saving.amount}{state.currency}</span>
+                        <span className="text-sm text-gray-800 dark:text-white">{((saving.remaining / saving.amount)*100).toFixed(2)}%</span>
                         </div>
                         <div 
                             className="w-full flex h-2 bg-gray-200 rounded-full overflow dark:bg-gray-700" 

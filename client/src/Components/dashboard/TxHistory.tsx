@@ -33,7 +33,7 @@ export default function TxHistory() {
   }, [transactions, user._id])
 
   return (
-    <div className="dark:bg-gray-800 dark:text-gray-100 rounded-lg p-4">
+    <div className="dark:bg-gray-800 dark:text-gray-100 rounded-lg w-full p-4">
       <h1 className="text-xl font-bold text-center mt-4">Recent Transactions</h1>
         {
           history.length > 0 ? 

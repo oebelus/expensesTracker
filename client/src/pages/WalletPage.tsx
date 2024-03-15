@@ -19,7 +19,7 @@ export default function Tracker() {
             <title>Transactions</title>
           </Helmet>
           <Sidebar/>
-          <div className="lg:col-span-4 w-full">
+          <div className="lg:col-span-4 flex flex-col h-full">
             <DashNav />
             <section className="p-6 h-full dark:bg-gray-800 dark:text-gray-50">
               <div className="head">

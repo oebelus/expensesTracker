@@ -46,7 +46,8 @@ export default function Wallet() {
     
     for (let i = 0; i < length; i++) {
       if (budgets[i].name.toLowerCase() === category.toLowerCase() && (new Date(budgets[i].createdAt)).getMonth() === (new Date().getMonth())) {
-        const remaining = budgets[i].remaining - amount 
+        const remaining = budgets[i].remaining - Math.abs(amount)
+        console.log(remaining) 
         axios.put(`http://localhost:4000/budgets/editBudget/${user._id}/${budgets[i]._id}`, {
           remaining: remaining,
           amount: budgets[i].amount,

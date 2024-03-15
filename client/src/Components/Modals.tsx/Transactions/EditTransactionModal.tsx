@@ -6,14 +6,16 @@ import { initialState, reducer } from "../../../context";
 import { toast } from "react-toastify";
 import { dictionary, getError } from "../../../../utils";
 import { ApiError } from "../../../types/ApiError";
+import { Budget } from "../../../types/Budget";
 
 interface EditTransactionModalProps {
     edit: boolean;
     closeEdit: () => void
     transaction: Transaction
+    budgets: Budget[]
 }
 
-export default function EditTransactionModal({edit, closeEdit, transaction}: EditTransactionModalProps) {
+export default function EditTransactionModal({edit, closeEdit, transaction, budgets}: EditTransactionModalProps) {
     const [name, setName] = useState<Transaction['name']>(transaction.name)
     const [amount, setAmount] = useState<Transaction['amount']>(transaction.amount)
     const [category, setCategory] = useState<Transaction['category']>(transaction.category)
@@ -26,20 +28,37 @@ export default function EditTransactionModal({edit, closeEdit, transaction}: Edi
     
     const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault()
-        try {
-            await axios.put(`http://localhost:4000/transactions/editTransaction/${user._id}/${transaction._id}`, {
+        for (let i = 0; i < length; i++) {
+            console.log(budgets[i].name.toLowerCase() === category.toLowerCase() && (new Date(budgets[i].createdAt)).getMonth() === (new Date().getMonth()))
+            if (budgets[i].name.toLowerCase() === category.toLowerCase() && (new Date(budgets[i].createdAt)).getMonth() === (new Date().getMonth())) {
+              const remaining = budgets[i].amount - (budgets[i].remaining + amount) 
+              axios.put(`http://localhost:4000/budgets/editBudget/${user._id}/${budgets[i]._id}`, {
+                remaining: remaining,
+                amount: budgets[i].amount,
+                name: budgets[i].name,
+                recurring: budgets[i].recurring,
+                isFull: remaining <= budgets[i].amount ? true : false
+              })
+              .then(() => {
+                dispatch({type: 'UPDATE_BUDGET', payload: budgets[i]})
+                toast.success(`Budget: "${budgets[i].name}" Updated Successfully`)
+              })
+              .catch((err) => getError(err as ApiError))
+            }
+          }
+        await axios.put(`http://localhost:4000/transactions/editTransaction/${user._id}/${transaction._id}`, {
                 name,
                 amount: txType === "expense" ? amount < 0 ? amount : -amount : - amount,
                 category,
                 date: date.toISOString(),
                 recurring,
                 txType
-            });
+        })
+        .then(() => { 
             dispatch({type: "UPDATE_TX", payload: transaction!})
             toast.success("Transaction Edited Successfully")
-        } catch (err) {
-            console.log(getError(err as ApiError));
-        }
+        })
+        .catch ((err) => console.log(getError(err as ApiError)))
     }
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
