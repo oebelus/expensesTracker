@@ -1,7 +1,7 @@
 import { useEffect, useReducer } from "react"
 import { initialState, reducer } from "../../context"
 import axios from "axios"
-import { getError } from "../../../utils"
+import { getError } from "../../utils/utils"
 import { ApiError } from "../../types/ApiError"
 
 export default function SavingPlans() {

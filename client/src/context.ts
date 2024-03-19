@@ -28,6 +28,7 @@ export type Action =
     | { type: 'SET_CURRENCY', payload: string }
     | { type: 'EDIT_NAME', payload: { firstName: string, familyName: string } }
     | { type: 'EDIT_EMAIL', payload: string }
+    | { type: 'EDIT_IMAGE', payload: string }
     | { type: 'FETCH_TX', payload: Transaction[] }
     | { type: 'ADD_TX', payload: Transaction }
     | { type: 'DELETE_TX', payload: string }
@@ -51,6 +52,8 @@ export function reducer(state: AppState, action: Action): AppState {
             return { ...state, user: { ...state.user, firstName: action.payload.firstName, familyName: action.payload.familyName } };
         case 'EDIT_EMAIL':
             return { ...state, user: { ...state.user, email: action.payload } };
+        case 'EDIT_IMAGE':
+            return { ...state, user: { ...state.user, image: action.payload } };
         case 'SET_CURRENCY':
             return { ...state, currency: action.payload }
         case 'FETCH_TX':

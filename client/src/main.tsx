@@ -35,7 +35,6 @@ const router = createBrowserRouter(
         <Route path={`${userId}/profile`} element={<Profile/>}></Route>
         <Route path="*" element={<ErrorPage/>} />
       </Route>
-      
     </Route>
   )
 )
@@ -45,5 +44,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <HelmetProvider>
       <RouterProvider router={router}/>
     </HelmetProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 )

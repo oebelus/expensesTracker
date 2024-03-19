@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { day, format, recurringDictionary } from "../../utils";
+import { day, format, recurringDictionary } from "../utils/utils";
 import { Transaction } from "../types/Transaction";
 import { useReducer } from "react";
 import { initialState, reducer } from "../context";

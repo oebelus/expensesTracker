@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useState } from "react";
-import { format, getError } from "../../../utils";
+import { format, getError } from "../../utils/utils";
 import { Transaction } from "../../types/Transaction";
 import axios from "axios";
 import { initialState, reducer } from "../../context";

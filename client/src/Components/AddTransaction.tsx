@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useEffect, useReducer, useState } from "react"
-import { getError } from "../../utils"
+import { getError } from "../utils/utils"
 import { ApiError } from "../types/ApiError"
 import { Transaction } from "../types/Transaction"
 import { initialState, reducer } from "../context"

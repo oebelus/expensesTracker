@@ -4,7 +4,7 @@ import { useReducer, useState } from 'react';
 import { Budget } from '../../../types/Budget';
 import { initialState, reducer } from '../../../context';
 import { toast } from 'react-toastify';
-import { dictionary, getError } from '../../../../utils';
+import { dictionary, getError } from '../../../utils/utils';
 import { ApiError } from '../../../types/ApiError';
 
 interface EditBudgetProps {

@@ -1,7 +1,7 @@
 import { useEffect, useReducer } from "react"
 import { initialState, reducer } from "../../context"
 import axios from "axios"
-import { format, getError } from "../../../utils"
+import { format, getError } from "../../utils/utils"
 import { ApiError } from "../../types/ApiError"
 
 export default function UpcomingPayments() {

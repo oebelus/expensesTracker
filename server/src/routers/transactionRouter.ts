@@ -54,7 +54,7 @@ transactionRouter.put('/editTransaction/:userId/:id', async (req: Request, res: 
         if (!txToUpdate) return res.status(404).json({ error: 'Transaction not found' });
 
         txToUpdate.category = updateTx.category
-        txToUpdate.amount = parseFloat(updateTx.amount)
+        txToUpdate.amount = updateTx.amount
         txToUpdate.name = updateTx.name
         txToUpdate.date = updateTx.date
         txToUpdate.recurring = dictionary[updateTx.recurring]

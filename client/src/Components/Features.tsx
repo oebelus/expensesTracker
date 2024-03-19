@@ -19,11 +19,6 @@ export default function Features() {
           </div>
           <div className="flex-grow">
             <p className="leading-relaxed text-base">Get a bird's eye view of your finances with our intuitive dashboard. Track your spending habits, monitor budget allocations, and stay on top of your financial health effortlessly.</p>
-            <a className="mt-3 text-indigo-400 inline-flex items-center">Learn More
-              <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" className="w-4 h-4 ml-2" viewBox="0 0 24 24">
-                <path d="M5 12h14M12 5l7 7-7 7"></path>
-              </svg>
-            </a>
           </div>
         </div>
       </div>
@@ -40,11 +35,6 @@ export default function Features() {
           </div>
           <div className="flex-grow">
             <p className="leading-relaxed text-base">Plan for the future with ease using our saving plans feature. Set achievable goals, allocate funds accordingly, and watch your savings grow over time. Stay motivated and accountable on your journey towards financial stability.</p>
-            <a className="mt-3 text-indigo-400 inline-flex items-center">Learn More
-              <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" className="w-4 h-4 ml-2" viewBox="0 0 24 24">
-                <path d="M5 12h14M12 5l7 7-7 7"></path>
-              </svg>
-            </a>
           </div>
         </div>
       </div>
@@ -62,11 +52,6 @@ export default function Features() {
           </div>
           <div className="flex-grow">
             <p className="leading-relaxed text-base">Keep a detailed record of your transactions. Easily categorize expenses, view transaction history, and gain insights into your spending habits to make informed financial decisions.</p>
-            <a className="mt-3 text-indigo-400 inline-flex items-center">Learn More
-              <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" className="w-4 h-4 ml-2" viewBox="0 0 24 24">
-                <path d="M5 12h14M12 5l7 7-7 7"></path>
-              </svg>
-            </a>
           </div>
         </div>
       </div>

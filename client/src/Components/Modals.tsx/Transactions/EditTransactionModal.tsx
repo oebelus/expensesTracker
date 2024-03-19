@@ -4,7 +4,7 @@ import axios from "axios";
 import { useReducer, useState } from "react";
 import { initialState, reducer } from "../../../context";
 import { toast } from "react-toastify";
-import { dictionary, getError } from "../../../../utils";
+import { dictionary, getError } from "../../../utils/utils";
 import { ApiError } from "../../../types/ApiError";
 import { Budget } from "../../../types/Budget";
 

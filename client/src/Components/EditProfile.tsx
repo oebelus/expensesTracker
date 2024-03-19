@@ -1,11 +1,13 @@
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import { ChangeEvent, useReducer, useState } from "react";
-import { getError } from "../../utils";
+import { ChangeEvent, useEffect, useReducer, useState } from "react";
+import { getError, getImageUrl } from "../utils/utils";
 import { ApiError } from "../types/ApiError";
 import { initialState, reducer } from "../context";
 import { toast } from "react-toastify";
+import { Modal } from "@mui/material";
+import Cookies from 'js-cookie'
 
 export default function EditProfile() {
     const [state, dispatch] = useReducer(reducer, initialState)
@@ -17,6 +19,7 @@ export default function EditProfile() {
     const [emailBtn, setEmailBtn] = useState(false)
     const [passwordBtn, setPasswordBtn] = useState(false)
     const [currencyBtn, setCurrencyBtn] = useState(false)
+    const [deleteBtn, setDeleteBtn] = useState(false)
 
     const [firstName, setFirstName] = useState("")
     const [familyName, setFamilyName] = useState("")
@@ -31,17 +34,24 @@ export default function EditProfile() {
 
         const formData = new FormData();
         formData.append("pfp", selectedFile); 
+        console.log("ID", user._id);
         try {
             const response = await axios.put(`http://localhost:4000/users/image/${user._id}`, formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
             });
-            setImage(response.data)
-            console.log(image)
-            localStorage.setItem('userInfo', JSON.stringify({ ...state.user, image }));
+            dispatch({type: 'EDIT_IMAGE', payload: getImageUrl(response.data)})
+            Cookies.set('userInfo', JSON.stringify({ ...state.user, image: user.image }))
+            localStorage.setItem('userInfo', JSON.stringify({ ...state.user, image: user.image }));
         } catch (err) {
             console.log(getError(err as ApiError));
         }
     }
+
+    useEffect(() => {
+        setImage(image)
+    }, [image])
+
+    console.log("FINAL IMAGE", image)
 
     async function handleEmail(e: React.SyntheticEvent) {
         e.preventDefault()
@@ -88,19 +98,41 @@ export default function EditProfile() {
         setCurrencyBtn(!currencyBtn)
     }
 
+    function handleDelete(e: React.SyntheticEvent) {
+        e.preventDefault()
+        axios.delete(`http://localhost:4000/users/${user._id}`)
+        .then(() => {
+            toast.success("User deleted successfully")
+            dispatch({type: 'USER_SIGNOUT'})
+            localStorage.removeItem('userInfo')
+            localStorage.removeItem('userId')
+            localStorage.removeItem('currency')
+            closeDel()
+            window.location.href = `/`;
+        })
+        .catch((error) => {
+            console.log(getError(error as ApiError))
+            toast.error(getError(error as ApiError))
+        })
+    }
+
+    const closeDel = () => {
+        setDeleteBtn(false)
+    }
+
     return (
         <div className="bg-gray-800 text-white h-full">
             <div className="flex flex-col items-center text-center p-8">
                 <div className={`border w-max ${!user.image? "p-6" : ""} rounded-full bg-gray-900 mb-4`}>
                     {user.image?
-                        <img className="object-contain w-[100px] rounded-full" src={`/profile/${user.image}`} alt="" />
+                        <img className="object-contain w-[100px] rounded-full" src={user.image} alt="" />
                         :
                         <FontAwesomeIcon icon={faUser} size="4x"/>
                     }
                 </div>
                 <h2 className="text-xl font-bold">{user.firstName} {user.familyName}</h2>
                 <p className="text-gray-500">{user.email}</p>
-                <label style={{"cursor": "pointer"}} className="bg-gray-900 p-2 pr-3 pl-3 rounded-lg mt-2" htmlFor="pfp">Add a Profile Picture</label>
+                <label style={{"cursor": "pointer"}} className="bg-gray-900 p-2 pr-3 pl-3 rounded-lg mt-2" htmlFor="pfp">{user.image ? "Edit Your " : "Add a "}Profile Picture</label>
                 <input onChange={handleImage} className="hidden" name="pfp" type="file" accept="image/*" id="pfp" />
             </div>
             <div className="flex flex-col p-4 gap-8 lg:relative lg:left-[20%] lg:w-[60%]">
@@ -183,6 +215,36 @@ export default function EditProfile() {
                                     <p>{currency}</p> 
                                 </div>
                                 <button onClick={() => {setCurrencyBtn(!currencyBtn)}} className="bg-gray-900 p-1 pr-2 pl-2 rounded-lg mt-2">Change</button>
+                            </div>
+                        }
+                    </div>
+                    <div>
+                        { deleteBtn ? 
+                            <Modal
+                                open={deleteBtn}
+                                onClose={closeDel}
+                                aria-labelledby="modal-modal-title"
+                                aria-describedby="modal-modal-description"
+                            >
+                                <div className="flex items-center justify-center h-full">
+                                    <div className="flex flex-col max-w-md gap-2 p-6 rounded-md shadow-md dark:bg-gray-900 dark:text-gray-100">
+                                        <h2 className="text-xl font-semibold leading-tight tracking-tight text-center">Delete Your Profile</h2>
+                                        <p className="flex-1 text-center dark:text-gray-400">Are you sure that you want to delete your profile?
+                                        </p>
+                                        <div className="flex justify-center gap-3 mt-6 sm:mt-8 sm:flex-row">
+                                            <button onClick={closeDel} className="px-6 py-2 rounded-sm">Cancel</button>
+                                            <button onClick={handleDelete} className="px-6 py-2 rounded-sm shadow-sm dark:bg-violet-400 dark:text-gray-900">Confirm</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Modal>
+                            : 
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h3 className="font-bold mb-2">Delete Your Profile</h3>
+                                    <p>Don't do it</p> 
+                                </div>
+                                <button onClick={() => {setDeleteBtn(!deleteBtn)}} className="bg-red-900 p-1 text-white pr-2 pl-2 rounded-lg mt-2">Delete</button>
                             </div>
                         }
                     </div>

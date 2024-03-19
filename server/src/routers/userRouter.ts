@@ -4,6 +4,8 @@ import bcrypt from "bcrypt"
 import * as utils from "../utils";
 import multer from "multer";
 import path from 'path'
+import jwt from "jsonwebtoken"
+import { googleOauthHandler } from "../controller/session.controller";
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -25,6 +27,8 @@ userRouter.get('/', async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Internal Server Error' })
     }
 })
+
+userRouter.get('/api/sessions/oauth/google', googleOauthHandler)
 
 userRouter.get('/:userId', async (req, res) => {
     try {
@@ -69,23 +73,34 @@ userRouter.post("/login", async (req: Request, res: Response) => {
 
 userRouter.post("/signup", async (req: Request, res: Response) => {
     const salt = bcrypt.genSaltSync(10);
-    const user = await UserModel.create({
-        firstName: req.body.firstName,
-        familyName: req.body.familyName,
-        email: req.body.email,
-        password: bcrypt.hashSync(req.body.password, salt),
-        imane: req.body.image
-    } as User)
+    const user = UserModel.findOne({email: req.params.email})
+    if (!user) {
+        const user = await UserModel.create({
+            firstName: req.body.firstName,
+            familyName: req.body.familyName,
+            email: req.body.email,
+            password: bcrypt.hashSync(req.body.password, salt),
+            imane: req.body.image
+        } as User)
 
-    res.json({
-        _id: user._id,
-        firstName: user.firstName,
-        familyName: user.familyName,
-        email: user.email,
-        token: utils.generateToken(user),
-        password: bcrypt.hashSync(req.body.password, salt),
-        Image: user.image
-    })
+        const token = jwt.sign(
+            { userId: user._id, email: user.email },
+            "sdfsf65456DsF/éF74--R--839çç",
+            { expiresIn: '1h' }
+        );
+    
+        res.json({
+            _id: user._id,
+            firstName: user.firstName,
+            familyName: user.familyName,
+            email: user.email,
+            token: utils.generateToken(user),
+            password: bcrypt.hashSync(req.body.password, salt),
+            Image: user.image
+        })
+    } else {
+        res.send("Email Already Exists")
+    }
 })
 
 userRouter.put('/image/:userId', upload.single('pfp'), async (req, res) => {
@@ -142,6 +157,18 @@ userRouter.put('/password/:userId', async (req, res) => {
             user.password = req.body.newPassword
             await user.save()
         }
+    } catch (err) {
+        res.status(500).send("Internal Server Error")
+    }
+})
+
+userRouter.delete('/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const userToDelete = await UserModel.findByIdAndDelete(userId)
+
+        if (!userToDelete) return res.status(404).json({ error: 'User not found' });
+        res.status(200).json({ message: 'User deleted successfully' });
     } catch (err) {
         res.status(500).send("Internal Server Error")
     }

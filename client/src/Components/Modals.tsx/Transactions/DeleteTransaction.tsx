@@ -5,7 +5,7 @@ import { initialState, reducer } from "../../../context";
 import { Transaction } from "../../../types/Transaction";
 import { Budget } from "../../../types/Budget";
 import { toast } from "react-toastify";
-import { getError } from "../../../../utils";
+import { getError } from "../../../utils/utils";
 import { ApiError } from "../../../types/ApiError";
 
 interface DeleteTransactionProps {
