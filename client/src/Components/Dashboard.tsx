@@ -38,7 +38,7 @@ export default function Dashboard() {
       .then((response) => {
           dispatch({type: 'FETCH_TX', payload: response.data})
           
-          setYear(new Date(response.data[0].date).getFullYear())
+          setYear(new Date(response.data.date).getFullYear())
           setYears(Array.from({length: last- year + 1}, (_, index) => year + index))
       })
       .catch((err) => {console.log(err)})

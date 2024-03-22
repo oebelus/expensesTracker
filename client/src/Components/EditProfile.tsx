@@ -62,7 +62,13 @@ export default function EditProfile() {
             toast.success("Email Updated Successfully")
             setEmailBtn(!emailBtn)
         })
-        .catch((err) => toast.error(getError(err as ApiError)))
+        .catch((error) => {
+            if (error.response && error.response.data && error.response.data.error) {
+                toast.error(error.response.data.error);
+            } else {
+                toast.error("An error occurred while updating the email.");
+            }
+        })
     }
 
     async function handleName(e: React.SyntheticEvent) {
@@ -77,7 +83,13 @@ export default function EditProfile() {
             toast.success("Name Updated Successfully"); 
             setnameBtn(!nameBtn)
         })
-        .catch((err) => toast.error(getError(err as ApiError)))
+        .catch((error) => {
+            if (error.response && error.response.data && error.response.data.error) {
+                toast.error(error.response.data.error);
+            } else {
+                toast.error("An error occurred while updating the name.");
+            }
+        })
     }
 
     async function handlePassword(e: React.SyntheticEvent) {
@@ -88,7 +100,13 @@ export default function EditProfile() {
             localStorage.setItem('userInfo', JSON.stringify({ ...state.user, newPassword }));
             setPasswordBtn(!passwordBtn)
         })
-        .catch((err) => toast.error(getError(err as ApiError)))
+        .catch((error) => {
+            if (error.response && error.response.data && error.response.data.error) {
+                toast.error(error.response.data.error);
+            } else {
+                toast.error("An error occurred while updating the password.");
+            }
+        })
     }
 
     function handleCurrency(e: React.SyntheticEvent) {
@@ -111,8 +129,11 @@ export default function EditProfile() {
             window.location.href = `/`;
         })
         .catch((error) => {
-            console.log(getError(error as ApiError))
-            toast.error(getError(error as ApiError))
+            if (error.response && error.response.data && error.response.data.error) {
+                toast.error(error.response.data.error);
+            } else {
+                toast.error("An error occurred while deleting your account.");
+            }
         })
     }
 
@@ -146,7 +167,10 @@ export default function EditProfile() {
                                     <input className='text-black rounded-lg' value={familyName} onChange={(e) => setFamilyName(e.target.value)} placeholder="Family Name" type="text" />
                                 </div>
                             </div>
-                            <button onClick={handleName} className="bg-gray-900 p-1 pr-5 pl-5 rounded-lg mt-2">Save</button>
+                            <div className="flex gap-2">
+                                <button onClick={handleName} className="bg-gray-900 p-1 pr-5 pl-5 rounded-lg mt-2">Save</button>
+                                <button onClick={() => setnameBtn(!nameBtn)} className="bg-gray-900 p-1 pr-5 pl-5 rounded-lg mt-2">Cancel</button>
+                            </div>
                         </div>
                         : 
                         <div className="flex items-center justify-between">
@@ -168,7 +192,10 @@ export default function EditProfile() {
                                         <input className="text-black rounded-lg" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Your New Password" />
                                     </div>
                                 </div>
-                                <button onClick={handlePassword} className="bg-gray-900 p-1 pr-5 pl-5 rounded-lg mt-2">Save</button>
+                                <div className="flex gap-2">
+                                    <button onClick={handlePassword} className="bg-gray-900 p-1 pr-5 pl-5 rounded-lg mt-2">Save</button>
+                                    <button onClick={() => setPasswordBtn(!passwordBtn)} className="bg-gray-900 p-1 pr-5 pl-5 rounded-lg mt-2">Cancel</button>
+                                </div>
                             </div>
                             : 
                             <div className="flex items-center justify-between">
@@ -187,7 +214,10 @@ export default function EditProfile() {
                                     <h3 className="font-bold mb-2">Email</h3>
                                     <input className="text-black rounded-lg" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                                 </div>
-                                <button onClick={handleEmail} className="bg-gray-900 p-1 pr-5 pl-5 rounded-lg mt-2">Save</button>
+                                <div className="flex gap-2">
+                                    <button onClick={handleEmail} className="bg-gray-900 p-1 pr-5 pl-5 rounded-lg mt-2">Save</button>
+                                    <button onClick={() => setEmailBtn(!emailBtn)} className="bg-gray-900 p-1 pr-5 pl-5 rounded-lg mt-2">Cancel</button>
+                                </div>
                             </div>
                             : 
                             <div className="flex items-center justify-between">
@@ -206,7 +236,10 @@ export default function EditProfile() {
                                     <h3 className="font-bold mb-2">Currency</h3>
                                     <input className="text-black rounded-lg" type="text" value={currencyy} onChange={(e) => setCurrencyy(e.target.value)} />
                                 </div>
-                                <button onClick={handleCurrency} className="bg-gray-900 p-1 pr-5 pl-5 rounded-lg mt-2">Save</button>
+                                <div className="flex gap-2">
+                                    <button onClick={handleCurrency} className="bg-gray-900 p-1 pr-5 pl-5 rounded-lg mt-2">Save</button>
+                                    <button onClick={() => setCurrencyBtn(!currencyBtn)} className="bg-gray-900 p-1 pr-5 pl-5 rounded-lg mt-2">Cancel</button>
+                                </div>
                             </div>
                             : 
                             <div className="flex items-center justify-between">
