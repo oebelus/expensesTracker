@@ -35,10 +35,10 @@ export default function EditProfile() {
             const response = await axios.put(`http://localhost:4000/users/image/${user._id}`, formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
             })
-            const updatedImage = response.data.image;
-            dispatch({type: 'EDIT_IMAGE', payload: { image: updatedImage }})
-            Cookies.set('userInfo', JSON.stringify({ ...state.user, updatedImage }))
-            localStorage.setItem('userInfo', JSON.stringify({ ...state.user, updatedImage }));
+            dispatch({type: 'EDIT_IMAGE', payload: { image: response.data.image }})
+            console.log(user)
+            Cookies.set('userInfo', JSON.stringify({ ...state.user, image: response.data.image }))
+            localStorage.setItem('userInfo', JSON.stringify({ ...state.user, image: response.data.image }));
             toast.success("Image Updated Successfully")
         } catch (error) {
             console.log(getError(error as ApiError));
