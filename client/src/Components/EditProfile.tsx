@@ -1,7 +1,7 @@
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import { ChangeEvent, useEffect, useReducer, useState } from "react";
+import { ChangeEvent, useReducer, useState } from "react";
 import { getError, getImageUrl } from "../utils/utils";
 import { ApiError } from "../types/ApiError";
 import { initialState, reducer } from "../context";
@@ -13,7 +13,6 @@ export default function EditProfile() {
     const [state, dispatch] = useReducer(reducer, initialState)
     const user = state.user
     const currency = state.currency
-    console.log(currency)
 
     const [nameBtn, setnameBtn] = useState(false)
     const [emailBtn, setEmailBtn] = useState(false)
@@ -21,57 +20,46 @@ export default function EditProfile() {
     const [currencyBtn, setCurrencyBtn] = useState(false)
     const [deleteBtn, setDeleteBtn] = useState(false)
 
-    const [firstName, setFirstName] = useState("")
-    const [familyName, setFamilyName] = useState("")
-    const [email, setEmail] = useState("")
+    const [firstName, setFirstName] = useState(user.firstName)
+    const [familyName, setFamilyName] = useState(user.familyName)
+    const [email, setEmail] = useState(user.email)
     const [oldPassword, setOldPassword] = useState("")
     const [newPassword, setNewPassword] = useState("")
-    const [image, setImage] = useState("")
     const [currencyy, setCurrencyy] = useState("$")
 
     async function handleImage (e: ChangeEvent<HTMLInputElement>) {
         const selectedFile = e.target.files![0]; 
-
         const formData = new FormData();
         formData.append("pfp", selectedFile); 
-        console.log("ID", user._id);
         try {
             const response = await axios.put(`http://localhost:4000/users/image/${user._id}`, formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
-            });
-            dispatch({type: 'EDIT_IMAGE', payload: getImageUrl(response.data)})
-            Cookies.set('userInfo', JSON.stringify({ ...state.user, image: user.image }))
-            localStorage.setItem('userInfo', JSON.stringify({ ...state.user, image: user.image }));
-        } catch (err) {
-            console.log(getError(err as ApiError));
+            })
+            const updatedImage = response.data.image;
+            dispatch({type: 'EDIT_IMAGE', payload: { image: updatedImage }})
+            Cookies.set('userInfo', JSON.stringify({ ...state.user, updatedImage }))
+            localStorage.setItem('userInfo', JSON.stringify({ ...state.user, updatedImage }));
+            toast.success("Image Updated Successfully")
+        } catch (error) {
+            console.log(getError(error as ApiError));
         }
     }
 
-    useEffect(() => {
-        setImage(image)
-    }, [image])
-
-    console.log("FINAL IMAGE", image)
-
     async function handleEmail(e: React.SyntheticEvent) {
         e.preventDefault()
-        axios.put(`http://localhost:4000/users/email/${user._id}`, {email: email})
-        .then(() => {
-            dispatch({type: "EDIT_EMAIL", payload: email})
+        try {
+            await axios.put(`http://localhost:4000/users/email/${user._id}`, {email: email})
+            dispatch({ type: "EDIT_EMAIL", payload: { email: email } });
             localStorage.setItem('userInfo', JSON.stringify({ ...state.user, email }));
-            toast.success("Email Updated Successfully")
-            setEmailBtn(!emailBtn)
-        })
-        .catch((error) => {
-            if (error.response && error.response.data && error.response.data.error) {
-                toast.error(error.response.data.error);
-            } else {
-                toast.error("An error occurred while updating the email.");
-            }
-        })
+            Cookies.set('userInfo', JSON.stringify({ ...state.user, email }));
+            toast.success("Email Updated Successfully");
+            setEmailBtn(!emailBtn);
+        } catch (error) {
+            console.log(error)
+        }
     }
 
-    async function handleName(e: React.SyntheticEvent) {
+    function handleName(e: React.SyntheticEvent) {
         e.preventDefault()
         axios.put(`http://localhost:4000/users/name/${user._id}`, {
             firstName: firstName,
@@ -80,6 +68,7 @@ export default function EditProfile() {
         .then(() => {
             dispatch({type: "EDIT_NAME", payload: { firstName, familyName }})
             localStorage.setItem('userInfo', JSON.stringify({ ...state.user, firstName, familyName }));
+            Cookies.set('userInfo', JSON.stringify({ ...state.user, firstName, familyName }));
             toast.success("Name Updated Successfully"); 
             setnameBtn(!nameBtn)
         })
@@ -92,12 +81,17 @@ export default function EditProfile() {
         })
     }
 
-    async function handlePassword(e: React.SyntheticEvent) {
+    function handlePassword(e: React.SyntheticEvent) {
         e.preventDefault()
-        axios.put(`http://localhost:4000/users/password/${user._id}`, {oldPassword, newPassword})
+        axios.put(`http://localhost:4000/users/password/${user._id}`, {
+            oldPassword: oldPassword,
+            newPassword: newPassword
+        })
         .then(() => {
             toast.success("Password Updated Successfully")
             localStorage.setItem('userInfo', JSON.stringify({ ...state.user, newPassword }));
+            Cookies.set('userInfo', JSON.stringify({ ...state.user, newPassword }));
+            toast.success("Password Updated Successfully"); 
             setPasswordBtn(!passwordBtn)
         })
         .catch((error) => {
@@ -125,6 +119,8 @@ export default function EditProfile() {
             localStorage.removeItem('userInfo')
             localStorage.removeItem('userId')
             localStorage.removeItem('currency')
+            Cookies.remove('userInfo')
+            Cookies.remove('userId')
             closeDel()
             window.location.href = `/`;
         })
@@ -146,7 +142,7 @@ export default function EditProfile() {
             <div className="flex flex-col items-center text-center p-8">
                 <div className={`border w-max ${!user.image? "p-6" : ""} rounded-full bg-gray-900 mb-4`}>
                     {user.image?
-                        <img className="object-contain w-[100px] rounded-full" src={user.image} alt="" />
+                        <img className="object-contain w-[100px] rounded-full" src={getImageUrl(user.image)} alt="" />
                         :
                         <FontAwesomeIcon icon={faUser} size="4x"/>
                     }
