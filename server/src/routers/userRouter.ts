@@ -82,12 +82,6 @@ userRouter.post("/signup", async (req: Request, res: Response) => {
             password: bcrypt.hashSync(req.body.password, salt),
             imane: req.body.image
         } as User)
-
-        const token = jwt.sign(
-            { userId: user._id, email: user.email },
-            "sdfsf65456DsF/éF74--R--839çç",
-            { expiresIn: '1h' }
-        );
     
         res.json({
             _id: user._id,
@@ -96,7 +90,7 @@ userRouter.post("/signup", async (req: Request, res: Response) => {
             email: user.email,
             token: utils.generateToken(user),
             password: bcrypt.hashSync(req.body.password, salt),
-            Image: user.image
+            image: user.image
         })
     } else {
         res.send("Email Already Exists")
@@ -108,11 +102,16 @@ userRouter.put('/image/:userId', upload.single('pfp'), async (req, res) => {
     try {
         const userId = req.params.userId
         const user = await UserModel.findById(userId)
-        if (!user) return res.status(404).send("User Not Found")
+        if (!user) return res.status(404).json({error: "User Not Found"})
         //console.log(JSON.stringify(req.file))
-        user.image = req.file?.filename
-        await user.save()
-        return res.send(req.file?.filename)
+        if (req.file) { 
+            user.image = req.file.filename
+            console.log("user image", user.image)
+            await user.save()
+            return res.send(user) 
+        } else {
+            res.status(401).json({error: "Error saving image"})
+        }
     }
     catch (err) {
         res.status(500).send("Internal Server Error")
@@ -123,7 +122,11 @@ userRouter.put('/name/:userId', async (req, res) => {
     try {
         const userId = req.params.userId
         const user = await UserModel.findById(userId)
-        if (!user) return res.status(404).send("User Not Found")
+        if (!user) return res.status(404).json({error: "User Not Found"})
+        if (req.body.firstName === "")
+            return res.status(401).json({error: "Enter Your First Name"})
+        if (req.body.firstName === "")
+            return res.status(401).json({error: "Enter Your Family Name"})
         user.firstName = req.body.firstName
         user.familyName = req.body.familyName
         await user.save()
@@ -137,12 +140,14 @@ userRouter.put('/email/:userId', async (req, res) => {
     try {
         const userId = req.params.userId
         const user = await UserModel.findById(userId)
-        if (!user) return res.status(404).send("User Not Found")
+        if (!user) return res.status(404).json({error: "User Not Found!"})
         const existingEmail = await UserModel.findOne({email: req.body.email})
-        if (existingEmail) return res.send("Email already in use")
+        if (existingEmail) return res.status(401).json({error: "Email already in use!"})
+        if (req.body.email == "")
+            return res.status(401).json({error: "Email Field is required!"})
         user.email = req.body.email
         await user.save()
-        console.log(user)
+        res.send(user)
     } catch (err) {
         res.status(500).send("Internal Server Error")
     }
@@ -152,10 +157,23 @@ userRouter.put('/password/:userId', async (req, res) => {
     try {
         const userId = req.params.userId
         const user = await UserModel.findById(userId)
-        if (!user) return res.status(404).send("User Not Found")
-        if (bcrypt.compareSync(req.body.oldPassword, user.password)) {
-            user.password = req.body.newPassword
+        if (!user) {
+            console.log('user not found')
+            return res.status(404).json({error: "User Not Found"})
+        }
+        const oldPassword = req.body.oldPassword
+        const newPassword = req.body.newPassword
+        if (newPassword.length == 0) {
+            console.log("length 0")
+            return res.status(401).json({error: "New Password Field is empty! Please enter your new password..."})
+        }
+        if (bcrypt.compareSync(oldPassword, user.password)) {
+            const salt = bcrypt.genSaltSync(10);
+            user.password = bcrypt.hashSync(newPassword, salt)
             await user.save()
+            res.send(user)
+        } else {
+            return res.status(401).json({error: "Old Password is Incorrect!"})
         }
     } catch (err) {
         res.status(500).send("Internal Server Error")
