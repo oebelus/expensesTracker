@@ -17,7 +17,7 @@ export default function Sidebar() {
             </button>
             <aside className={`${visible ? "" : "hidden"} h-full transition-transform duration-200 lg:block lg:col-span-1 lg:flex-col sm:flex-row lg:h-screen px-5 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700`}>
                 <a href={`${window.location.pathname.replace(window.location.pathname, "dashboard")}`}>
-                    <img className="w-auto h-7" src="/hero.png" alt=""/>
+                    <img className="w-auto h-7 mt-8" src="/hero.png" alt=""/>
                 </a>
 
                 <div className="lg:flex md:flex-row sm:flex-row lg:flex-col justify-between flex-1 mt-6">

@@ -1,8 +1,9 @@
-import { Fragment, useReducer } from 'react'
+import { Fragment, useEffect, useReducer, useState } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon } from '@heroicons/react/24/outline'
 import { initialState, reducer } from '../context'
 import Cookies from 'js-cookie'
+import { getImageUrl } from '../utils/utils'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -12,6 +13,12 @@ export default function DashNav() {
   const currentPath = window.location.pathname
   const [state, dispatch] = useReducer(reducer, initialState)
   const user = state.user
+
+  const [image, setImage] = useState(user.image)
+
+  useEffect(() => {
+    setImage(user.image)
+  }, [user.image])
 
   function handleSignout() {
     dispatch({type: 'USER_SIGNOUT'})
@@ -40,7 +47,7 @@ export default function DashNav() {
                 <div className="flex flex-shrink-0 items-center md:ml-20">
                     <a href={`${currentPath.replace(window.location.pathname, "dashboard")}`}>
                         <h1 
-                        className="text-xl font-bold dark:border-transparent dark:text-violet-400 dark:border-violet-400"
+                        className="text-xl font-bold dark:border-transparent dark:text-violet-400 dark:border-violet-400 ml-10"
                         style={{"cursor": "pointer"}}
                         >
                             Expense Tracker</h1>
@@ -65,7 +72,7 @@ export default function DashNav() {
                       <span className="sr-only">Open user menu</span>
                       <img
                         className="h-8 w-8 rounded-full"
-                        src={`${user?.image? user.image : ""}`} alt=""
+                        src={`${image? getImageUrl(image) : ""}`} alt=""
                       />
                     </Menu.Button>
                   </div>

@@ -27,8 +27,8 @@ export type Action =
     | { type: 'USER_SIGNOUT' }
     | { type: 'SET_CURRENCY', payload: string }
     | { type: 'EDIT_NAME', payload: { firstName: string, familyName: string } }
-    | { type: 'EDIT_EMAIL', payload: string }
-    | { type: 'EDIT_IMAGE', payload: string }
+    | { type: 'EDIT_EMAIL', payload: { email: string } }
+    | { type: 'EDIT_IMAGE', payload: { image: string } }
     | { type: 'FETCH_TX', payload: Transaction[] }
     | { type: 'ADD_TX', payload: Transaction }
     | { type: 'DELETE_TX', payload: string }
@@ -51,9 +51,9 @@ export function reducer(state: AppState, action: Action): AppState {
         case 'EDIT_NAME':
             return { ...state, user: { ...state.user, firstName: action.payload.firstName, familyName: action.payload.familyName } };
         case 'EDIT_EMAIL':
-            return { ...state, user: { ...state.user, email: action.payload } };
+            return { ...state, user: { ...state.user, email: action.payload.email } };
         case 'EDIT_IMAGE':
-            return { ...state, user: { ...state.user, image: action.payload } };
+            return { ...state, user: { ...state.user, image: action.payload.image } };
         case 'SET_CURRENCY':
             return { ...state, currency: action.payload }
         case 'FETCH_TX':

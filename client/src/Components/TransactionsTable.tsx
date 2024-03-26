@@ -20,7 +20,7 @@ export default function TransactionsTable({prompt, filteredCategory, min, max, f
     const [state, ] = useReducer(reducer, initialState) 
     
     return (
-        <div className="overflow-x-auto mt-6">
+        <div className="overflow-x-auto">
             <table className="min-w-full text-xs">
                 <colgroup>
                     <col />

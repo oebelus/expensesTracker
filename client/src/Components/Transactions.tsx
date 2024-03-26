@@ -15,6 +15,8 @@ export default function Transactions() {
 
     const [filteredCategory, setFilteredCategory] = useState("")
     const [filteredData, setFilteredData] = useState<Transaction[]>([])
+    const [sumOfNegatives, setSumOfNegatives] = useState(0)
+    const [sumOfPositives, setSumOfPositives] = useState(0)
 
     const minDate = new Date(new Date().setDate(1))
     minDate.setHours(1, 0, 0, 0)
@@ -57,6 +59,15 @@ export default function Transactions() {
             })
         }
         setFilteredData(filteredTransactions)
+
+        const negatives: Transaction[] = filteredData.filter((transaction) => transaction.amount < 0)
+        const negValues = (negatives: Transaction[]) => negatives.reduce((acc, val) => acc + val.amount, 0)
+        setSumOfNegatives(negValues(negatives))
+
+        const positives: Transaction[] = filteredData.filter((transaction) => transaction.amount > 0)
+        const posValues = (positives: Transaction[]) => positives.reduce((acc, val) => acc + val.amount, 0)
+        setSumOfPositives(posValues(positives))
+
     }, [min, max, filteredCategory, prompt, user._id, transactions]);
     
     useEffect(() => {
@@ -91,9 +102,10 @@ export default function Transactions() {
         setMin(minDate)
         setMax(new Date())
     }
-    
+
     return (
         <div>
+            <h2 className="mb-4 text-2xl font-semibold leadi mt-4">My Transactions</h2>
             {edit && tx && <EditTransactionModal edit={edit} budgets={budgets} closeEdit={closeEdit} transaction={tx} />}
             {tx && <DeleteTransaction del={del} closeDel={closeDel} transaction={tx} budgets={budgets} />}
             <TransactionsFilter 
@@ -107,9 +119,12 @@ export default function Transactions() {
                 max={max}
                 prompt={prompt}
             />
-            <div className="container p-2 mx-auto sm:p-4 dark:text-gray-100">
-                <h2 className="mb-4 text-2xl font-semibold leadi">My Transactions</h2>
-                
+            <div className="flex p-4 gap-10 justify-left">
+                <span>Earned: {sumOfPositives}</span>
+                <span>Saved: {sumOfPositives + sumOfNegatives}</span>
+                <span>Spent: {sumOfNegatives}</span>
+            </div>
+            <div className="container p-2 sm:p-4 dark:text-gray-100">
                 <TransactionsTable 
                     prompt={prompt}
                     filteredCategory={filteredCategory}

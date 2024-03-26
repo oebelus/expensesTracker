@@ -115,7 +115,7 @@ export default function Dashboard() {
       </div>
       <div id="dashboard" className="grid gap-4 lg:grid-cols-4 sm:col-span-3">
         <div className="w-auto flex flex-col relative items-center bg-gray-800 rounded-lg sm:col-span-1 lg:col-span-2 md:col-span-2">
-          <div className='lg:w-[20%] md:w-[10%] w-[1%] absolute top-2 right-2'>
+          <div className='lg:w-[20%] md:w-[10%] w-[10%] absolute top-2 right-2'>
             <Years years={years} setClickedYear={setClickedYear}/>
           </div>
           <Plot monthlyData={monthlyTotals} />

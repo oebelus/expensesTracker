@@ -40,6 +40,7 @@ export default function EditProfile() {
             Cookies.set('userInfo', JSON.stringify({ ...state.user, image: response.data.image }))
             localStorage.setItem('userInfo', JSON.stringify({ ...state.user, image: response.data.image }));
             toast.success("Image Updated Successfully")
+            window.location.reload();
         } catch (error) {
             console.log(getError(error as ApiError));
         }

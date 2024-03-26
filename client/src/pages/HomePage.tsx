@@ -24,8 +24,13 @@ export default function HomePage() {
       if (userCookie && userIdCookie) {
         localStorage.setItem("userInfo", userCookie.slice(2));
         localStorage.setItem("userId", userIdCookie.slice(3, -1));
-        dispatch({ type: "USER_SIGNIN", payload: JSON.parse(userCookie) });
-        window.location.href = `${JSON.parse(userCookie)._id}/dashboard`;
+        try {
+          const parsedUserCookie = JSON.parse(userCookie.trim())
+          dispatch({ type: "USER_SIGNIN", payload: JSON.parse(parsedUserCookie) });
+          window.location.href = `${JSON.parse(userCookie)._id}/dashboard`;
+        } catch (err) {
+          console.log(err)
+        }
       }
     }
   }, [user]);
