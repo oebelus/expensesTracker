@@ -1,11 +1,13 @@
-import express, {Request, Response} from "express"
+import express, {NextFunction, Request, Response} from "express"
 import { User, UserModel } from "../models/userModel";
 import bcrypt from "bcrypt"
 import * as utils from "../utils";
 import multer from "multer";
 import path from 'path'
-import jwt from "jsonwebtoken"
+import dotenv from "dotenv"
 import { googleOauthHandler } from "../controller/session.controller";
+
+dotenv.config()
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -49,6 +51,7 @@ userRouter.get('/:userId', async (req, res) => {
         res.status(404).json({ error: "User Not Found" })
     }
 })
+
 
 userRouter.post("/login", async (req: Request, res: Response) => {
     const user = await UserModel.findOne({ email: req.body.email })

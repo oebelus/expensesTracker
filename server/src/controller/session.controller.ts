@@ -13,7 +13,6 @@ export async function googleOauthHandler(req: Request, res: Response) {
 
         // Get the user with tokens
         const googleUser = await getGoogleUser({id_token, access_token})
-        console.log("Google user: ", googleUser)
         /*jwt.decode(id_token)*/
 
         if (!googleUser.verified_email) {
@@ -24,24 +23,21 @@ export async function googleOauthHandler(req: Request, res: Response) {
         const salt = bcrypt.genSaltSync(10);
         let user = await UserModel.findOne({ email: googleUser.email });
         if (user) {
-            res.cookie("userId", user!._id)
-            res.cookie("userInfo", user)
+            res.cookie("token",  generateToken(user), {httpOnly: true, secure: true})
         } else {
             user = await UserModel.create({
                 email: googleUser.email,
                 firstName: googleUser.given_name,
                 familyName: googleUser.family_name,
                 password: bcrypt.hashSync("123456789", salt),
-                image: googleUser.picture,
+                image: googleUser.picture
             });
         
             // Create access & refresh tokens
             const token = generateToken(user!)
 
             // Set cookies
-            res.cookie("token", token)
-            res.cookie("userId", user!._id)
-            res.cookie("userInfo", user)
+            res.cookie("token", token, {httpOnly: true, secure: true})
         }
         // Redirect back to client
         res.redirect(`http://localhost:5173/`)

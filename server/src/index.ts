@@ -7,7 +7,6 @@ import { userRouter } from './routers/userRouter';
 import { transactionRouter } from './routers/transactionRouter';
 import { budgetRouter } from './routers/budgetRouter';
 import { savingRouter } from './routers/savingRouter';
-
 dotenv.config()
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost/expenses'

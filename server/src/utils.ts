@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv'
 import axios from 'axios'
 import qs from 'qs'
-import { FilterQuery, QueryOptions, UpdateQuery } from "mongoose";
 
 dotenv.config()
 
@@ -15,7 +14,7 @@ export const generateToken = (user: User) => {
             familyName: user.familyName,
             email: user.email
         },
-        process.env.JWT_SECRET || 'sdSDFSF546516àééééèè-+',
+        process.env.SESSION_SECRET || 'sdSDFSF546516àééééèè-+',
         {
             expiresIn: '30d'
         }

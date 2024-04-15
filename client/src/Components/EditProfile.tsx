@@ -7,7 +7,6 @@ import { ApiError } from "../types/ApiError";
 import { initialState, reducer } from "../context";
 import { toast } from "react-toastify";
 import { Modal } from "@mui/material";
-import Cookies from 'js-cookie'
 
 export default function EditProfile() {
     const [state, dispatch] = useReducer(reducer, initialState)
@@ -37,7 +36,6 @@ export default function EditProfile() {
             })
             dispatch({type: 'EDIT_IMAGE', payload: { image: response.data.image }})
             console.log(user)
-            Cookies.set('userInfo', JSON.stringify({ ...state.user, image: response.data.image }))
             localStorage.setItem('userInfo', JSON.stringify({ ...state.user, image: response.data.image }));
             toast.success("Image Updated Successfully")
             window.location.reload();
@@ -52,7 +50,6 @@ export default function EditProfile() {
             await axios.put(`http://localhost:4000/users/email/${user._id}`, {email: email})
             dispatch({ type: "EDIT_EMAIL", payload: { email: email } });
             localStorage.setItem('userInfo', JSON.stringify({ ...state.user, email }));
-            Cookies.set('userInfo', JSON.stringify({ ...state.user, email }));
             toast.success("Email Updated Successfully");
             setEmailBtn(!emailBtn);
         } catch (error) {
@@ -69,7 +66,6 @@ export default function EditProfile() {
         .then(() => {
             dispatch({type: "EDIT_NAME", payload: { firstName, familyName }})
             localStorage.setItem('userInfo', JSON.stringify({ ...state.user, firstName, familyName }));
-            Cookies.set('userInfo', JSON.stringify({ ...state.user, firstName, familyName }));
             toast.success("Name Updated Successfully"); 
             setnameBtn(!nameBtn)
         })
@@ -91,7 +87,6 @@ export default function EditProfile() {
         .then(() => {
             toast.success("Password Updated Successfully")
             localStorage.setItem('userInfo', JSON.stringify({ ...state.user, newPassword }));
-            Cookies.set('userInfo', JSON.stringify({ ...state.user, newPassword }));
             toast.success("Password Updated Successfully"); 
             setPasswordBtn(!passwordBtn)
         })
@@ -120,8 +115,6 @@ export default function EditProfile() {
             localStorage.removeItem('userInfo')
             localStorage.removeItem('userId')
             localStorage.removeItem('currency')
-            Cookies.remove('userInfo')
-            Cookies.remove('userId')
             closeDel()
             window.location.href = `/`;
         })

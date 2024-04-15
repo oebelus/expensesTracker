@@ -39,7 +39,7 @@ export default function Dashboard() {
           dispatch({type: 'FETCH_TX', payload: response.data})
           
           setYear(new Date(response.data.date).getFullYear())
-          setYears(Array.from({length: last- year + 1}, (_, index) => year + index))
+          setYears(Array.from({length: last - year + 1}, (_, index) => year + index))
       })
       .catch((err) => {console.log(err)})
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -2,7 +2,6 @@ import { Fragment, useEffect, useReducer, useState } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon } from '@heroicons/react/24/outline'
 import { initialState, reducer } from '../context'
-import Cookies from 'js-cookie'
 import { getImageUrl } from '../utils/utils'
 
 function classNames(...classes: string[]) {
@@ -25,9 +24,6 @@ export default function DashNav() {
     localStorage.removeItem('userId')
     localStorage.removeItem('userInfo')
     localStorage.removeItem('currency')
-    Cookies.remove('userId')
-    Cookies.remove('userInfo')
-    Cookies.remove('token')
     window.location.href = '/';
   }
 
