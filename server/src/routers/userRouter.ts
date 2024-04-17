@@ -44,7 +44,8 @@ userRouter.get('/:userId', async (req, res) => {
                 email: user.email,
                 token: utils.generateToken(user),
                 password: user.password,
-                image: user.image
+                image: user.image,
+                currency: user.currency
             } as User)
         }
     } catch (error) { 
@@ -64,7 +65,8 @@ userRouter.post("/login", async (req: Request, res: Response) => {
                 familyName: user.familyName,
                 email: user.email,
                 token: utils.generateToken(user),
-                image: user.image
+                image: user.image,
+                currency: user.currency
             })
             return
         }
@@ -150,6 +152,24 @@ userRouter.put('/email/:userId', async (req, res) => {
             return res.status(401).json({error: "Email Field is required!"})
         user.email = req.body.email
         await user.save()
+        res.send(user)
+    } catch (err) {
+        res.status(500).send("Internal Server Error")
+    }
+})
+
+userRouter.put('/currency/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const user = await UserModel.findById(userId)
+        if (!user) return res.status(404).json({error: "User Not Found!"})
+            
+        if (req.body.currency == "")
+            return res.status(401).json({error: "Currency Field is required!"})
+        user.currency = req.body.currency
+        console.log(user.currency)
+        await user.save()
+        console.log(user)
         res.send(user)
     } catch (err) {
         res.status(500).send("Internal Server Error")
