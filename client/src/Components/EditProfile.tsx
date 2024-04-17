@@ -101,9 +101,19 @@ export default function EditProfile() {
 
     function handleCurrency(e: React.SyntheticEvent) {
         e.preventDefault()
-        dispatch({type: 'SET_CURRENCY', payload: currencyy})
-        localStorage.setItem('currency', currencyy)
-        setCurrencyBtn(!currencyBtn)
+        axios.put(`http://localhost:4000/users/currency/${user._id}`, {currency: currencyy})
+        .then(() => {
+            dispatch({type: 'SET_CURRENCY', payload: currencyy})
+            toast.success("Currency Updated Successfully"); 
+            setCurrencyBtn(!currencyBtn)
+        })
+        .catch((error) => {
+            if (error.response && error.response.data && error.response.data.error) {
+                toast.error(error.response.data.error);
+            } else {
+                toast.error("An error occurred while updating the currency.");
+            }
+        })
     }
 
     function handleDelete(e: React.SyntheticEvent) {
