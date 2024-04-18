@@ -23,7 +23,6 @@ export default function DashNav() {
     dispatch({type: 'USER_SIGNOUT'})
     localStorage.removeItem('userId')
     localStorage.removeItem('userInfo')
-    localStorage.removeItem('currency')
     window.location.href = '/';
   }
 

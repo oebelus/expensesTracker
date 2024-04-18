@@ -19,8 +19,6 @@ import Profile from './pages/Profile.tsx'
 import ProtectedRoute from './Components/ProtectedRoute.tsx'
 import ErrorPage from './pages/ErrorPage.tsx'
 
-const userId = localStorage.getItem('userId')
-
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App/>}>
@@ -28,11 +26,11 @@ const router = createBrowserRouter(
       <Route path='Login' element={<LoginPage/>}></Route>
       <Route path='Signup' element={<SignupPage/>}></Route>
       <Route path='' element={<ProtectedRoute/>}>
-        <Route path={`${userId}/dashboard`} element={<Tracker/>}></Route>
-        <Route path={`${userId}/wallet`} element={<WalletPage/>}></Route>
-        <Route path={`${userId}/budgeting`} element={<BudgetingPage/>}></Route>
-        <Route path={`${userId}/saving`} element={<SavingPage/>}></Route>
-        <Route path={`${userId}/profile`} element={<Profile/>}></Route>
+        <Route path={`dashboard`} element={<Tracker/>}></Route>
+        <Route path={`wallet`} element={<WalletPage/>}></Route>
+        <Route path={`budgeting`} element={<BudgetingPage/>}></Route>
+        <Route path={`saving`} element={<SavingPage/>}></Route>
+        <Route path={`profile`} element={<Profile/>}></Route>
         <Route path="*" element={<ErrorPage/>} />
       </Route>
     </Route>

@@ -10,12 +10,14 @@ type AppState = {
     savings: Budget[];
 }
 
+const user = localStorage.getItem('userInfo')
+? JSON.parse(localStorage.getItem('userInfo')!)
+: "null"
+
 export const initialState: AppState = {
-    user: localStorage.getItem('userInfo')
-        ? JSON.parse(localStorage.getItem('userInfo')!)
-        : "null",
-    currency: localStorage.getItem('currency')
-        ? localStorage.getItem("currency")!
+    user: user ? user : "null",
+    currency: user
+        ? user.currency
         : "$",
     transactions: [],
     budgets: [],

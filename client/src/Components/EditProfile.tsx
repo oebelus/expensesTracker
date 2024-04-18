@@ -106,6 +106,7 @@ export default function EditProfile() {
             dispatch({type: 'SET_CURRENCY', payload: currencyy})
             toast.success("Currency Updated Successfully"); 
             setCurrencyBtn(!currencyBtn)
+            localStorage.setItem('userInfo', JSON.stringify({ ...state.user, currency: currencyy }));
         })
         .catch((error) => {
             if (error.response && error.response.data && error.response.data.error) {
@@ -124,7 +125,6 @@ export default function EditProfile() {
             dispatch({type: 'USER_SIGNOUT'})
             localStorage.removeItem('userInfo')
             localStorage.removeItem('userId')
-            localStorage.removeItem('currency')
             closeDel()
             window.location.href = `/`;
         })
