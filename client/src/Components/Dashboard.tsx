@@ -26,7 +26,7 @@ export default function Dashboard() {
 
   const [clickedYear, setClickedYear] = useState<number>(new Date().getFullYear())
 
-  const [month, setMonth] = useState<number>(2)
+  const [month, setMonth] = useState<number>(new Date().getMonth())
   const [monthly, setMonthly] = useState<Transaction[]>([])
   const [yearly, setYearly] = useState<Transaction[]>([])
 
@@ -37,13 +37,11 @@ export default function Dashboard() {
     axios.get(`http://localhost:4000/transactions/${user._id}`)
       .then((response) => {
           dispatch({type: 'FETCH_TX', payload: response.data})
-          
-          setYear(new Date(response.data.date).getFullYear())
+          setYear(new Date().getFullYear())
           setYears(Array.from({length: last - year + 1}, (_, index) => year + index))
       })
       .catch((err) => {console.log(err)})
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user._id, clickedYear]);
+    }, [user._id, clickedYear, last, year]);
 
   useEffect(() => {
     const monthlyTotalsCopy = {
@@ -97,6 +95,7 @@ export default function Dashboard() {
   return (
     <section className="p-6 dark:bg-gray-900 dark:text-gray-50 overflow-y-hidden">
       <h1 className="lg:text-2xl font-bold">Welcome to your Dashboard, {user.firstName}</h1>
+      <p className="mt-4">This Year: ({year})</p>
       <div className="flex flex-col shadow-md w-90 m-6 sm:flex-row gap-4">
         {cardsData.map((card, key) => {
           return (
