@@ -6,7 +6,27 @@ import qs from 'qs'
 
 dotenv.config()
 
-export const generateToken = (user: User) => {
+const ACCESS_SECRET = process.env.ACCESS_SECRET
+const REFRESH_SECRET = process.env.REFRESH_SECRET
+
+export const generateAccess = (user: User) => {
+    return jwt.sign(
+        {
+            _id: user._id,
+            firstName: user.firstName,
+            familyName: user.familyName,
+            email: user.email,
+            image: user.image,
+            currency: user.currency
+        },
+        ACCESS_SECRET || 'sdSDFSF546516àééééèè-+',
+        {
+            expiresIn: '15m'
+        }
+    )
+}
+
+export const generateRefresh = (user: User) => {
     return jwt.sign(
         {
             _id: user._id,
@@ -14,7 +34,7 @@ export const generateToken = (user: User) => {
             familyName: user.familyName,
             email: user.email
         },
-        process.env.SESSION_SECRET || 'sdSDFSF546516àééééèè-+',
+        REFRESH_SECRET || 'sdSDFSF546516àééééèè-+',
         {
             expiresIn: '30d'
         }

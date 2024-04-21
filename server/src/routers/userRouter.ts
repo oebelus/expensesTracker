@@ -1,11 +1,13 @@
-import express, {NextFunction, Request, Response} from "express"
+import express, { NextFunction, Request, Response} from "express"
 import { User, UserModel } from "../models/userModel";
 import bcrypt from "bcrypt"
-import * as utils from "../utils";
 import multer from "multer";
 import path from 'path'
 import dotenv from "dotenv"
+import jwt from "jsonwebtoken"
 import { googleOauthHandler } from "../controller/session.controller";
+import { generateAccess, generateRefresh } from "../utils";
+import authMiddleware from "../middleware/auth";
 
 dotenv.config()
 
@@ -32,7 +34,7 @@ userRouter.get('/', async (req: Request, res: Response) => {
 
 userRouter.get('/api/sessions/oauth/google', googleOauthHandler)
 
-userRouter.get('/:userId', async (req, res) => {
+userRouter.get('/:userId', authMiddleware, async (req, res) => {
     try {
         const userId = req.params.userId
         const user = await UserModel.findOne({_id: userId})
@@ -42,7 +44,6 @@ userRouter.get('/:userId', async (req, res) => {
                 firstName: user.firstName,
                 familyName: user.familyName,
                 email: user.email,
-                token: utils.generateToken(user),
                 password: user.password,
                 image: user.image,
                 currency: user.currency
@@ -53,22 +54,31 @@ userRouter.get('/:userId', async (req, res) => {
     }
 })
 
-
 userRouter.post("/login", async (req: Request, res: Response) => {
     const user = await UserModel.findOne({ email: req.body.email })
-
+    const salt = bcrypt.genSaltSync(10);
     if (user) {
         if (bcrypt.compareSync(req.body.password, user.password)) {
+            const accessToken = generateAccess(user)
+            const refreshToken = generateRefresh(user)
+
+            res.cookie("accessToken", accessToken, {
+                maxAge: 300000, // 5 minutes
+                httpOnly: true,
+              });
+            
+            res.cookie("refreshToken", refreshToken, {
+            maxAge: 60*60*60*24*7, // 1 week
+            httpOnly: true,
+            });
+
             res.json({
                 _id: user._id,
                 firstName: user.firstName,
                 familyName: user.familyName,
                 email: user.email,
-                token: utils.generateToken(user),
-                image: user.image,
-                currency: user.currency
+                image: user.image
             })
-            return
         }
         res.status(401).json({ message: "Invalid Email or Password" })
         return
@@ -87,14 +97,25 @@ userRouter.post("/signup", async (req: Request, res: Response) => {
             password: bcrypt.hashSync(req.body.password, salt),
             imane: req.body.image
         } as User)
+
+        const accessToken = generateAccess(user)
+        const refreshToken = generateRefresh(user)
+
+        res.cookie("accessToken", accessToken, {
+            maxAge: 300000, // 5 minutes
+            httpOnly: true,
+          });
+        
+        res.cookie("refreshToken", refreshToken, {
+        maxAge: 60*60*60*24*7, // 1 week
+        httpOnly: true,
+        });
     
         res.json({
             _id: user._id,
             firstName: user.firstName,
             familyName: user.familyName,
             email: user.email,
-            token: utils.generateToken(user),
-            password: bcrypt.hashSync(req.body.password, salt),
             image: user.image
         })
     } else {

@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
+import cookieParser from 'cookie-parser'
 import { urlencoded } from 'body-parser';
 import { userRouter } from './routers/userRouter';
 import { transactionRouter } from './routers/transactionRouter';
@@ -29,6 +30,7 @@ app.use(
 )
 
 app.use(express.json())
+app.use(cookieParser());
 app.use(urlencoded({ extended: true }))
 app.use('../../../client/public', express.static('images'))
 

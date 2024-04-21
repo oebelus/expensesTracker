@@ -1,4 +1,4 @@
-import { generateToken, getGoogleOAuthTokens, getGoogleUser } from "../utils"
+import { generateAccess, generateRefresh, getGoogleOAuthTokens, getGoogleUser } from "../utils"
 import { Request, Response } from "express"
 import { UserModel } from "../models/userModel"
 import bcrypt from 'bcrypt'
@@ -23,7 +23,7 @@ export async function googleOauthHandler(req: Request, res: Response) {
         const salt = bcrypt.genSaltSync(10);
         let user = await UserModel.findOne({ email: googleUser.email });
         if (user) {
-            res.cookie("token",  generateToken(user), {httpOnly: true, secure: true})
+            res.cookie("accessToken",  generateAccess(user), {httpOnly: true, secure: true})
         } else {
             user = await UserModel.create({
                 email: googleUser.email,
@@ -34,11 +34,21 @@ export async function googleOauthHandler(req: Request, res: Response) {
             });
         
             // Create access & refresh tokens
-            const token = generateToken(user!)
+            const accessToken = generateAccess(user)
+            const refreshToken = generateRefresh(user)
 
             // Set cookies
-            res.cookie("token", token, {httpOnly: true, secure: true})
+            res.cookie("accessToken", accessToken, {
+                maxAge: 300000, // 5 minutes
+                httpOnly: true,
+            });
+            
+            res.cookie("refreshToken", refreshToken, {
+            maxAge: 60*60*60*24*7, // 1 week
+            httpOnly: true,
+            })
         }
+
         // Redirect back to client
         res.redirect(`http://localhost:5173/`)
 

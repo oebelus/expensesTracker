@@ -18,6 +18,7 @@
   "devDependencies": {
     "@typegoose/typegoose": "^12.2.0",
     "@types/bcrypt": "^5.0.2",
+    "@types/cookie-parser": "^1.4.7",
     "@types/cookie-session": "^2.0.48",
     "@types/cors": "^2.8.17",
     "@types/dotenv": "^8.2.0",
@@ -41,6 +42,7 @@
     "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
     "connect-mongo": "^5.1.0",
+    "cookie-parser": "^1.4.6",
     "cookie-session": "^2.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

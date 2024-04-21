@@ -1,10 +1,12 @@
 import express from "express"
 import { SavingModel } from "../models/savingModel"
+import authMiddleware from "../middleware/auth"
 
 export const savingRouter = express.Router()
 
-savingRouter.get('/:userId', async (req, res) => {
+savingRouter.get('/:userId', authMiddleware, async (req, res) => {
     const userId = req.params.userId
+    console.log(userId)
     try {
         const budgets = await SavingModel.find({ userId: userId })
         res.status(200).json(budgets)

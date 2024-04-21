@@ -22,6 +22,9 @@ export class User {
     @prop({ required: true})
     public password!: string
 
+    @prop()
+    public currency?: string
+
     @prop({ ref: () => Transaction })
     public transactions?: Ref<Transaction>[]
 
