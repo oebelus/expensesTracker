@@ -72,6 +72,7 @@ export default function Wallet() {
     })
     .then((response) => {
       dispatch({type: 'ADD_TX', payload: response.data})
+      toast.success("Transaction added successfully")
     })
     .catch((err) => console.log(getError(err as ApiError)))
   }

@@ -3,6 +3,7 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon } from '@heroicons/react/24/outline'
 import { initialState, reducer } from '../context'
 import { getImageUrl } from '../utils/utils'
+import Cookies from "js-cookie"
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -23,6 +24,8 @@ export default function DashNav() {
     dispatch({type: 'USER_SIGNOUT'})
     localStorage.removeItem('userId')
     localStorage.removeItem('userInfo')
+    Cookies.remove("accessToken")
+    Cookies.remove("refreshToken")
     window.location.href = '/';
   }
 

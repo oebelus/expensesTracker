@@ -6,4 +6,5 @@ export type User = {
     password: string,
     token?: string,
     image?: string,
+    currency?: string
 }
