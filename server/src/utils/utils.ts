@@ -1,23 +1,22 @@
-import { User } from "./models/userModel"
+import { User } from "../models/userModel"
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv'
 import axios from 'axios'
 import qs from 'qs'
+import crypto from "crypto"
 
 dotenv.config()
 
 const ACCESS_SECRET = process.env.ACCESS_SECRET
 const REFRESH_SECRET = process.env.REFRESH_SECRET
 
-export const generateAccess = (user: User) => {
+export const generateAccess = (user: User, session: Session) => {
     return jwt.sign(
         {
-            _id: user._id,
+            sessionId: session.sessionId,
             firstName: user.firstName,
             familyName: user.familyName,
             email: user.email,
-            image: user.image,
-            currency: user.currency
         },
         ACCESS_SECRET || 'sdSDFSF546516àééééèè-+',
         {
@@ -26,10 +25,10 @@ export const generateAccess = (user: User) => {
     )
 }
 
-export const generateRefresh = (user: User) => {
+export const generateRefresh = (user: User, session: Session) => {
     return jwt.sign(
         {
-            _id: user._id,
+            sessionId: session.sessionId,
             firstName: user.firstName,
             familyName: user.familyName,
             email: user.email
@@ -39,6 +38,10 @@ export const generateRefresh = (user: User) => {
             expiresIn: '30d'
         }
     )
+}
+
+export function generateKeys(): string {
+    return crypto.randomBytes(16).toString('base64');
 }
 
 interface GoogleTokensResult {

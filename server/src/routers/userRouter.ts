@@ -6,8 +6,9 @@ import path from 'path'
 import dotenv from "dotenv"
 import jwt from "jsonwebtoken"
 import { googleOauthHandler } from "../controller/session.controller";
-import { generateAccess, generateRefresh } from "../utils";
+import { generateAccess, generateRefresh } from "../utils/utils";
 import authMiddleware from "../middleware/auth";
+import { createSession } from "../utils/session";
 
 dotenv.config()
 
@@ -59,8 +60,10 @@ userRouter.post("/login", async (req: Request, res: Response) => {
     const salt = bcrypt.genSaltSync(10);
     if (user) {
         if (bcrypt.compareSync(req.body.password, user.password)) {
-            const accessToken = generateAccess(user)
-            const refreshToken = generateRefresh(user)
+            const session = createSession(user.email, user.familyName)
+            
+            const accessToken = generateAccess(user, session)
+            const refreshToken = generateRefresh(user, session)
 
             res.cookie("accessToken", accessToken, {
                 maxAge: 300000, // 5 minutes
@@ -98,8 +101,10 @@ userRouter.post("/signup", async (req: Request, res: Response) => {
             imane: req.body.image
         } as User)
 
-        const accessToken = generateAccess(user)
-        const refreshToken = generateRefresh(user)
+        const session = createSession(user.email, user.familyName)
+            
+        const accessToken = generateAccess(user, session)
+        const refreshToken = generateRefresh(user, session)
 
         res.cookie("accessToken", accessToken, {
             maxAge: 300000, // 5 minutes

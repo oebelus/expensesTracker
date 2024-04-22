@@ -1,4 +1,4 @@
-import { generateAccess, generateRefresh, getGoogleOAuthTokens, getGoogleUser } from "../utils"
+import { generateAccess, generateRefresh, getGoogleOAuthTokens, getGoogleUser } from "../utils/utils"
 import { Request, Response } from "express"
 import { UserModel } from "../models/userModel"
 import bcrypt from 'bcrypt'
