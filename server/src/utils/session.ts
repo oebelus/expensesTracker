@@ -8,7 +8,7 @@ export const sessions: Record<
 export function createSession(email: string, name: string) {
     let sessionId: string = generateKeys()
 
-    while (!sessions[sessionId]) {
+    while (sessions[sessionId] != undefined) {
         sessionId = generateKeys()
     }
 
