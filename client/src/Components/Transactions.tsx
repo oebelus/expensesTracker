@@ -68,7 +68,7 @@ export default function Transactions() {
         const posValues = (positives: Transaction[]) => positives.reduce((acc, val) => acc + val.amount, 0)
         setSumOfPositives(posValues(positives))
 
-    }, [min, max, filteredCategory, prompt, user._id, transactions]);
+    }, [min, max, filteredCategory, prompt, user._id, transactions, filteredData]);
     
     useEffect(() => {
         axios.get(`http://localhost:4000/budgets/${user._id}`).then(

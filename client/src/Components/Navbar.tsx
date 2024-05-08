@@ -1,9 +1,21 @@
 import { Link } from "react-scroll";
 import { Link as RouterLink } from "react-router-dom"
 import { useState } from "react";
+import { useGSAP } from "@gsap/react"
+import gsap from "gsap";
 
 export default function Navbar() {
   const [url, setUrl] = useState('hero');
+
+  useGSAP(() => {
+    gsap.from('#navbar', { 
+      duration:1,
+      delay:.5,
+      opacity:0,
+      y:50,
+      stagger: 0.1
+    });
+  }, [])
 
   return (
     <header className="p-4 dark:bg-gray-800 dark:text-gray-100 sticky top-0 z-50">
@@ -15,7 +27,7 @@ export default function Navbar() {
               className="w-11 h-11 p-2 rounded-full" 
           />
         </a>
-        <ul className="items-stretch hidden space-x-3 lg:flex">
+        <ul id="navbar" className="items-stretch hidden space-x-3 lg:flex">
           <li className="flex">
             <Link 
               rel="noopener noreferrer" 
@@ -27,7 +39,7 @@ export default function Navbar() {
               onClick={() => setUrl('hero')}
               >
                   Home
-          </Link>
+            </Link>
           </li>
           <li className="flex">
             <Link 
@@ -40,7 +52,7 @@ export default function Navbar() {
               onClick={() => setUrl('features')}
               >
                   Features
-          </Link>
+            </Link>
           </li>
           <li className="flex">
             <Link 
@@ -53,10 +65,7 @@ export default function Navbar() {
               onClick={() => setUrl('steps')}
           >
               Steps
-          </Link>
-          </li>
-          <li className="flex">
-            <a rel="noopener noreferrer" href="#" className="flex items-center px-4 -mb-1 border-b-2 dark:border-transparent">Link</a>
+            </Link>
           </li>
         </ul>
         <div className="items-center flex-shrink-0 hidden lg:flex">

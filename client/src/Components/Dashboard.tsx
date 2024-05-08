@@ -31,7 +31,6 @@ export default function Dashboard() {
   const [yearly, setYearly] = useState<Transaction[]>([])
 
   const user = state.user
-  console.log(user)
   const transactions = state.transactions
 
   useEffect(() => {

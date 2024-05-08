@@ -11,7 +11,7 @@ type AppState = {
 }
 
 const user = localStorage.getItem('userInfo')
-? JSON.parse(localStorage.getItem('userInfo')!)
+? JSON.parse(localStorage.getItem('userInfo')!).user
 : "null"
 
 export const initialState: AppState = {

@@ -29,7 +29,7 @@ export default function SignUp() {
         })
         .then(response => {
             dispatch({type: 'USER_SIGNIN', payload: response.data})
-            localStorage.setItem('userId', response.data._id)
+            localStorage.setItem('userId', response.data.user._id)
             localStorage.setItem('userInfo', JSON.stringify(response.data))
             window.location.href = `${response.data._id}/dashboard`;
         })
