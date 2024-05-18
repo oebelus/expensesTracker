@@ -1,5 +1,5 @@
 type Session = {
     sessionId: string;
-    email: string; 
+    id: string;
     valid: boolean
 }

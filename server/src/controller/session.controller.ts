@@ -34,19 +34,9 @@ export async function googleOauthHandler(req: Request, res: Response) {
             });
         
             // Create access & refresh tokens
-            const accessToken = generateAccess(user)
-            const refreshToken = generateRefresh(user)
 
             // Set cookies
-            res.cookie("accessToken", accessToken, {
-                maxAge: 300000, // 5 minutes
-                httpOnly: true,
-            });
             
-            res.cookie("refreshToken", refreshToken, {
-            maxAge: 60*60*60*24*7, // 1 week
-            httpOnly: true,
-            })
         }
 
         // Redirect back to client

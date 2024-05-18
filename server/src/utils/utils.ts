@@ -4,16 +4,17 @@ import dotenv from 'dotenv'
 import axios from 'axios'
 import qs from 'qs'
 import crypto from "crypto"
+import { Request, Response, NextFunction } from "express";
 
 dotenv.config()
 
 const ACCESS_SECRET = process.env.ACCESS_SECRET
 const REFRESH_SECRET = process.env.REFRESH_SECRET
 
-export const generateAccess = (user: User, session: Session) => {
+export const generateAccess = (user: User) => {
     return jwt.sign(
         {
-            sessionId: session.sessionId,
+            _id: user._id,
             firstName: user.firstName,
             familyName: user.familyName,
             email: user.email,
@@ -41,7 +42,9 @@ export const generateRefresh = (user: User, session: Session) => {
 }
 
 export function generateKeys(): string {
-    return crypto.randomBytes(16).toString('base64');
+    const generated = crypto.randomBytes(16).toString('base64');
+    console.log(generated)
+    return generated
 }
 
 interface GoogleTokensResult {
